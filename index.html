@@ -124,8 +124,8 @@
             <i class="fa-solid fa-bolt text-lg"></i>
           </div>
           <div>
-            <h2 class="font-bold text-slate-800 text-base">极简口令跨端云同步（含图片分片同步）</h2>
-            <p class="text-xs text-slate-400">自动将训练数据与自定义图片拆包同步，手机电脑完整互通</p>
+            <h2 class="font-bold text-slate-800 text-base">极简口令跨端云同步</h2>
+            <p class="text-xs text-slate-400">支持 JSON 导入/导出后一键直推云端</p>
           </div>
         </div>
 
@@ -190,7 +190,7 @@
         <div class="flex items-center justify-between">
           <div>
             <span class="font-bold text-slate-700 text-sm">JSON 文件全量备份</span>
-            <p class="text-[11px] text-slate-400">本地文件导出与导入兜底</p>
+            <p class="text-[11px] text-slate-400">导入后将立即同步并保存</p>
           </div>
           <div class="flex space-x-2">
             <button onclick="exportBackupJSON()" class="border border-slate-200 hover:bg-slate-50 text-slate-700 py-1.5 px-3 rounded-lg text-xs font-medium">导出文件</button>
@@ -311,7 +311,6 @@
   </div>
 
   <script>
-    // ==================== 预置高清矢量图解生成器 ====================
     function createSvgPlaceholder(title, subtitle, colorHex) {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="280" viewBox="0 0 400 280">
         <rect width="100%" height="100%" fill="${colorHex}" rx="16"/>
@@ -329,7 +328,6 @@
       "腹轮": createSvgPlaceholder("腹轮推行", "收紧核心不塌腰 · 顶峰收缩", "#7c3aed")
     };
 
-    // 校验图片数据是否合法（彻底拦截 __KEEP_LOCAL_IMG__ 等无效字符导致裂图）
     function isValidImgSrc(src) {
       return typeof src === "string" && src.startsWith("data:image/");
     }
@@ -372,7 +370,7 @@
       };
     }
 
-    const STORAGE_KEY = "FIT_NTFY_V7_CHUNK";
+    const STORAGE_KEY = "FIT_NTFY_V8_FIX";
     const DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
     let appData = loadState();
     let currentTab = "train";
@@ -398,7 +396,7 @@
 
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("FIT_NTFY_V6_IMG") || localStorage.getItem("FIT_NTFY_V5");
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("FIT_NTFY_V7_CHUNK") || localStorage.getItem("FIT_NTFY_V6_IMG") || localStorage.getItem("FIT_NTFY_V5");
         if (!raw) return getInitialData();
         const parsed = JSON.parse(raw);
         if (!parsed.passcode || parsed.passcode.startsWith("ghp_")) parsed.passcode = "chan888";
@@ -497,7 +495,6 @@
       if (t === "sync") renderSyncTab();
     }
 
-    // ==================== Tab 1: 训练渲染 ====================
     function renderTrainTab() {
       const selector = document.getElementById("daySelector");
       selector.innerHTML = "";
@@ -562,7 +559,7 @@
               <button onclick="moveExercise(${idx}, 1)" class="w-7 h-7 rounded hover:bg-slate-100 hover:text-slate-700 flex items-center justify-center" title="下移">
                 <i class="fa-solid fa-arrow-down text-xs"></i>
               </button>
-              <button onclick="openExerciseModal('${ex.id}')" class="w-7 h-7 rounded hover:bg-slate-100 hover:text-emerald-600 flex items-center justify-center" title="编辑参数与图片">
+              <button onclick="openExerciseModal('${ex.id}')" class="w-7 h-7 rounded hover:bg-slate-100 hover:text-emerald-600 flex items-center justify-center" title="编辑">
                 <i class="fa-solid fa-pen-to-square text-xs"></i>
               </button>
               <button onclick="deleteExercise('${ex.id}')" class="w-7 h-7 rounded hover:bg-rose-50 hover:text-rose-500 flex items-center justify-center" title="删除">
@@ -631,7 +628,6 @@
       if (res) { cur.theme = res.trim(); saveState(); renderTrainTab(); }
     }
 
-    // ==================== 云同步级自适应压缩（确保单张图片小于 3.2KB，100% 穿透 ntfy.sh） ====================
     function compressImageForCloud(file, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -640,21 +636,12 @@
           let maxDim = 160;
           let quality = 0.55;
           let dataUrl = "";
-
-          // 循环自适应阶梯压缩，确保编码后小于 3200 字节
           while (maxDim >= 80) {
             const canvas = document.createElement("canvas");
-            let w = img.width;
-            let h = img.height;
-            if (w > h && w > maxDim) {
-              h = Math.round((h * maxDim) / w);
-              w = maxDim;
-            } else if (h > maxDim) {
-              w = Math.round((w * maxDim) / h);
-              h = maxDim;
-            }
-            canvas.width = w;
-            canvas.height = h;
+            let w = img.width, h = img.height;
+            if (w > h && w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            else if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+            canvas.width = w; canvas.height = h;
             const ctx = canvas.getContext("2d");
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, w, h);
@@ -680,7 +667,7 @@
           ex.image = base64;
           saveState();
           renderTrainTab();
-          showToast("图片已保存！点击「上传推送到云端」即可同步到手机");
+          showToast("图片已保存！点击上传即可同步");
         }
       });
     }
@@ -808,10 +795,9 @@
       skipRestTimer();
       saveState();
       renderTrainTab();
-      showToast("今日训练已归档至历史记录！");
+      showToast("今日训练已归档！");
     }
 
-    // ==================== 日历、历史与统计 ====================
     function renderCalendarTab() {
       document.getElementById("calendarMonthTitle").textContent = `${calYear}年 ${calMonth + 1}月`;
       const grid = document.getElementById("calendarGrid");
@@ -922,7 +908,6 @@
       });
     }
 
-    // ==================== 多包分片云端同步引擎（文字+多张图片100%跨端同步） ====================
     function renderSyncTab() {
       document.getElementById("syncPasscodeInput").value = appData.passcode || "chan888";
       if (appData.lastSync) document.getElementById("lastSyncTimeText").textContent = `上次同步: ${appData.lastSync}`;
@@ -951,7 +936,6 @@
       return decodeURIComponent(escape(window.atob(str)));
     }
 
-    // 将单个原本过大的历史旧图在上传前自动微缩至 3.2KB 内
     function shrinkDataUrl(dataUrl) {
       return new Promise((resolve) => {
         if (!dataUrl || dataUrl.length <= 3200) return resolve(dataUrl);
@@ -988,14 +972,12 @@
       const clone = JSON.parse(JSON.stringify(appData));
       const imgPackets = [];
 
-      // 1. 提取自定义图片为独立分片包，主数据包仅保留轻量占位
       for (const k of DAY_ORDER) {
         for (const e of clone.days[k].exercises) {
           if (isValidImgSrc(e.image)) {
             if (e.image.startsWith("data:image/svg+xml")) {
               e.image = "__SVG__";
             } else {
-              // 确保自定义图片尺寸小巧可穿透 ntfy.sh
               const compactImg = await shrinkDataUrl(e.image);
               imgPackets.push({ id: e.id, name: e.name, img: compactImg });
               e.image = "";
@@ -1007,34 +989,28 @@
       }
 
       try {
-        // 第一步：发送主训练计划包
-        const mainBody = "FITMAIN:" + utf8ToBase64(JSON.stringify(clone));
         const resMain = await fetch(`https://ntfy.sh/${topic}`, {
           method: "POST",
-          body: mainBody
+          body: "FITMAIN:" + utf8ToBase64(JSON.stringify(clone))
         });
         if (!resMain.ok) throw new Error("主数据上传失败");
 
-        // 第二步：逐个发送自定义图片分片包（每张图独立一条消息，突破4KB限制）
         for (let i = 0; i < imgPackets.length; i++) {
           updateSyncStatus(`正在同步图片 (${i + 1}/${imgPackets.length})...`, true);
           const p = imgPackets[i];
           const imgBody = `FITIMG:${encodeURIComponent(p.id)}|${encodeURIComponent(p.name)}|${p.img}`;
           if (imgBody.length < 3950) {
-            await fetch(`https://ntfy.sh/${topic}`, {
-              method: "POST",
-              body: imgBody
-            });
+            await fetch(`https://ntfy.sh/${topic}`, { method: "POST", body: imgBody });
           }
         }
 
         appData.lastSync = new Date().toLocaleTimeString();
         saveState();
         renderSyncTab();
-        updateSyncStatus(`推送成功！（含训练计划与 ${imgPackets.length} 张自定义图片）`, true);
-        showToast("训练计划与图片已全部同步至云端！");
+        updateSyncStatus("推送成功！云端已保存最新计划", true);
+        showToast("已成功推送到云端！");
       } catch (err) {
-        updateSyncStatus("网络波动，请重试或使用下方微信文字同步", false);
+        updateSyncStatus("网络波动，请重试", false);
         showToast("上传受阻，请重试");
       } finally {
         btn.disabled = false;
@@ -1051,7 +1027,7 @@
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>拉取中...</span>';
       }
-      if (!silent) updateSyncStatus("正在从云端拉取训练数据与图片...", true);
+      if (!silent) updateSyncStatus("正在从云端拉取...", true);
 
       const topic = "fit_butler_cn_" + encodeURIComponent(code);
 
@@ -1065,7 +1041,6 @@
         let latestMainEncoded = "";
         const cloudImgMap = {};
 
-        // 遍历消息流，收集最新的主数据包 + 所有的图片分片包
         for (let i = 0; i < lines.length; i++) {
           try {
             const row = JSON.parse(lines[i]);
@@ -1091,13 +1066,12 @@
 
         if (!latestMainEncoded) {
           if (!silent) {
-            updateSyncStatus("云端暂无记录，请先在电脑端点击【上传推送到云端】", false);
-            showToast("请先在另一端上传一次");
+            updateSyncStatus("云端暂无记录", false);
+            showToast("请先在电脑端上传一次");
           }
           return;
         }
 
-        // 同时保留本机已有的有效自定义图片作为兜底
         const localImgMap = {};
         DAY_ORDER.forEach(k => {
           if (appData.days && appData.days[k]) {
@@ -1112,7 +1086,6 @@
 
         const remoteData = JSON.parse(base64ToUtf8(latestMainEncoded));
 
-        // 拼装还原所有图片（优先使用云端最新分片图 -> 其次本机缓存图 -> 其次默认SVG -> 否则置空显示传图按钮）
         DAY_ORDER.forEach(k => {
           if (remoteData.days && remoteData.days[k]) {
             remoteData.days[k].exercises.forEach(e => {
@@ -1120,8 +1093,6 @@
                 e.image = cloudImgMap[e.id] || cloudImgMap[e.name];
               } else if (e.image === "__SVG__" || PRESET_SVGS[e.name]) {
                 e.image = PRESET_SVGS[e.name] || "";
-              } else if (isValidImgSrc(e.image)) {
-                // 保持原有效图片
               } else if (localImgMap[e.id] || localImgMap[e.name]) {
                 e.image = localImgMap[e.id] || localImgMap[e.name];
               } else {
@@ -1137,12 +1108,12 @@
         appData = sanitizeData(remoteData);
         saveState();
         switchTab(currentTab);
-        updateSyncStatus("拉取成功！训练计划与动作图片已全部就绪", true);
-        showToast(silent ? "已自动同步最新图文数据" : "图文同步完成！");
+        updateSyncStatus("拉取成功！", true);
+        showToast(silent ? "" : "拉取成功！");
       } catch (err) {
         if (!silent) {
-          updateSyncStatus("拉取超时，请重试", false);
-          showToast("拉取失败，请重试");
+          updateSyncStatus("拉取超时", false);
+          showToast("拉取失败");
         }
       } finally {
         if (btn) {
@@ -1152,14 +1123,13 @@
       }
     }
 
-    // ==================== 微信文字全量同步 ====================
     async function copySyncCode() {
       const codeStr = "FITMAIN:" + utf8ToBase64(JSON.stringify(appData));
       try {
         await navigator.clipboard.writeText(codeStr);
-        showToast("全量同步码已复制！可粘贴发给微信");
+        showToast("同步码已复制到剪贴板");
       } catch (e) {
-        prompt("请全选复制以下同步码发给微信：", codeStr);
+        prompt("请复制同步码：", codeStr);
       }
     }
 
@@ -1172,24 +1142,21 @@
       } catch (e) {}
 
       if (!raw || (!raw.includes("FITMAIN:") && !raw.includes("FITSYNC:"))) {
-        raw = prompt("请长按粘贴从微信复制过来的同步码：") || "";
+        raw = prompt("请粘贴同步码：") || "";
       }
 
       const tag = raw.includes("FITMAIN:") ? "FITMAIN:" : (raw.includes("FITSYNC:") ? "FITSYNC:" : "");
-      if (!tag) {
-        showToast("未检测到有效同步码");
-        return;
-      }
+      if (!tag) { showToast("无效同步码"); return; }
 
       try {
         const b64 = raw.split(tag)[1].trim();
-        const imported = sanitizeData(JSON.parse(base64ToUtf8(b64)));
-        appData = imported;
+        appData = sanitizeData(JSON.parse(base64ToUtf8(b64)));
         saveState();
         switchTab("train");
-        showToast("全量同步码（含图片）导入成功！");
+        pushToCloud(); // 导入后立即自动推送到云端
+        showToast("导入成功并已自动同步！");
       } catch (err) {
-        showToast("同步码不完整或已损坏");
+        showToast("同步码损坏");
       }
     }
 
@@ -1197,9 +1164,9 @@
       const blob = new Blob([JSON.stringify(appData, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `健身随身管家全量备份_${formatDateYMD(new Date())}.json`;
+      a.download = `健身随身管家备份_${formatDateYMD(new Date())}.json`;
       a.click();
-      showToast("全量备份文件已导出");
+      showToast("备份已导出");
     }
 
     function importBackupJSON(e) {
@@ -1209,9 +1176,10 @@
       reader.onload = ev => {
         try {
           appData = sanitizeData(JSON.parse(ev.target.result));
-          saveState();
-          switchTab("train");
-          showToast("全量备份（含图片）导入成功！");
+          saveState(); // 1. 写入本地缓存
+          switchTab("train"); // 2. 刷新界面渲染
+          pushToCloud(); // 3. 立即触发云端推送！
+          showToast("备份导入成功并已自动同步到云端！");
         } catch(err) {
           showToast("导入失败，文件格式有误");
         }
@@ -1221,13 +1189,13 @@
     }
 
     function resetToDefaultData() {
-      if (!confirm("确定要恢复出厂预置训练计划吗？")) return;
+      if (!confirm("恢复默认计划？")) return;
       const keep = appData.passcode;
       appData = getInitialData();
       appData.passcode = keep;
       saveState();
       switchTab("train");
-      showToast("已恢复出厂预置计划");
+      showToast("已恢复默认计划");
     }
 
     window.addEventListener("DOMContentLoaded", () => {

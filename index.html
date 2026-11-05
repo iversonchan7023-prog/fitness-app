@@ -33,7 +33,7 @@
         <button onclick="toggleWorkoutTimer()" id="workoutTimerBtn" class="text-xs bg-emerald-500 hover:bg-emerald-600 text-white w-6 h-6 rounded-full flex items-center justify-center transition">
           <i class="fa-solid fa-play"></i>
         </button>
-        <button onclick="resetWorkoutTimer()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 w-6 h-6 rounded-full flex items-center justify-center transition">
+        <button onclick="resetWorkoutTimer()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 w-6 h-6 rounded-full flex items-center justify-center transition" title="重置计时">
           <i class="fa-solid fa-rotate-right"></i>
         </button>
       </div>
@@ -115,7 +115,7 @@
       </div>
     </section>
 
-    <!-- Tab 5: 同步 (基于 GitHub API，国内直连稳妥) -->
+    <!-- Tab 5: 同步 -->
     <section id="tab-sync" class="tab-content hidden space-y-4">
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-4">
         <div class="flex items-center space-x-2">
@@ -124,14 +124,30 @@
           </div>
           <div>
             <h2 class="font-bold text-slate-800 text-base">GitHub 原生私有云同步</h2>
-            <p class="text-xs text-slate-400">数据保存在自己仓库的 data.json 中，国内直连稳定</p>
+            <p class="text-xs text-slate-400">数据直连提交至仓库，安全稳定不拦截</p>
           </div>
         </div>
 
         <div class="space-y-3 pt-1">
           <div>
-            <label class="block text-xs font-medium text-slate-600 mb-1">GitHub Personal Token (密钥)</label>
-            <input type="password" id="ghTokenInput" placeholder="粘贴 ghp_ 开头的密钥..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-emerald-500" />
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-medium text-slate-600">GitHub Token (密钥)</label>
+              <!-- 一键读取剪贴板按钮 -->
+              <button onclick="pasteTokenFromClipboard()" class="text-xs text-emerald-600 hover:text-emerald-700 flex items-center space-x-1">
+                <i class="fa-regular fa-paste"></i>
+                <span>点击一键粘贴</span>
+              </button>
+            </div>
+            <!-- 修改为普通 text 输入框，并增加自动识别属性 -->
+            <input 
+              type="text" 
+              id="ghTokenInput" 
+              autocapitalize="off" 
+              autocorrect="off" 
+              spellcheck="false" 
+              placeholder="粘贴 ghp_ 开头的密钥..." 
+              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-emerald-500" 
+            />
           </div>
 
           <div class="grid grid-cols-2 gap-2">
@@ -572,12 +588,29 @@
       });
     }
 
-    // ==================== GitHub 原生直连同步逻辑 ====================
+    // ==================== GitHub 原生同步逻辑 ====================
     function renderSyncTab() {
       document.getElementById("ghTokenInput").value = appData.ghToken || "";
       document.getElementById("ghOwnerInput").value = appData.ghOwner || "iversonchan7023-prog";
       document.getElementById("ghRepoInput").value = appData.ghRepo || "健身应用";
       if (appData.lastSync) document.getElementById("lastSyncTimeText").textContent = `上次同步: ${appData.lastSync}`;
+    }
+
+    // 点击一键读取剪贴板
+    async function pasteTokenFromClipboard() {
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          const text = await navigator.clipboard.readText();
+          if (text) {
+            document.getElementById("ghTokenInput").value = text.trim();
+            showToast("已成功从剪贴板粘贴");
+            return;
+          }
+        }
+      } catch (err) {}
+      // 降级兜底聚焦
+      document.getElementById("ghTokenInput").focus();
+      showToast("请长按输入框直接粘贴");
     }
 
     function saveGitHubConfig() {
@@ -594,7 +627,6 @@
       el.className = ok ? "text-emerald-600 font-medium" : "text-rose-500 font-medium";
     }
 
-    // 字符串安全转 Base64（支持中文）
     function utf8ToBase64(str) {
       return window.btoa(unescape(encodeURIComponent(str)));
     }
@@ -618,7 +650,6 @@
       const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
 
       try {
-        // 先获取现存文件的 sha（如果已存在）
         let sha = "";
         const getRes = await fetch(apiUrl, {
           headers: {
@@ -631,7 +662,6 @@
           sha = fileMeta.sha;
         }
 
-        // 提交写入 data.json
         const contentBase64 = utf8ToBase64(JSON.stringify(appData, null, 2));
         const putRes = await fetch(apiUrl, {
           method: "PUT",
@@ -742,6 +772,16 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+      // 支持网址后带 #token= 自动识别
+      if (window.location.hash.includes("token=")) {
+        const token = window.location.hash.split("token=")[1];
+        if (token) {
+          appData.ghToken = decodeURIComponent(token);
+          saveState();
+          history.replaceState(null, "", window.location.pathname);
+        }
+      }
+
       renderTrainTab();
       renderSyncTab();
       if (appData.ghToken) pullFromGitHub(true);

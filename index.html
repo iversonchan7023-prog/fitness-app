@@ -19,7 +19,7 @@
 </head>
 <body class="text-slate-800 pb-24 select-none">
 
-  <!-- 顶部常驻栏 & 总计时器 -->
+  <!-- 顶部常驻栏 -->
   <header class="sticky top-0 z-30 bg-slate-900 text-white shadow-md">
     <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-2">
@@ -33,7 +33,7 @@
         <button onclick="toggleWorkoutTimer()" id="workoutTimerBtn" class="text-xs bg-emerald-500 hover:bg-emerald-600 text-white w-6 h-6 rounded-full flex items-center justify-center transition">
           <i class="fa-solid fa-play"></i>
         </button>
-        <button onclick="resetWorkoutTimer()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 w-6 h-6 rounded-full flex items-center justify-center transition" title="重置计时">
+        <button onclick="resetWorkoutTimer()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 w-6 h-6 rounded-full flex items-center justify-center transition">
           <i class="fa-solid fa-rotate-right"></i>
         </button>
       </div>
@@ -42,7 +42,7 @@
 
   <main class="max-w-xl mx-auto px-4 pt-4">
 
-    <!-- ==================== Tab 1: 训练 ==================== -->
+    <!-- Tab 1: 训练 -->
     <section id="tab-train" class="tab-content space-y-4">
       <div id="daySelector" class="flex space-x-2 overflow-x-auto no-scrollbar pb-1"></div>
       <div class="flex items-center justify-between bg-white p-3.5 rounded-xl shadow-sm border border-slate-100">
@@ -66,27 +66,21 @@
       </div>
     </section>
 
-    <!-- ==================== Tab 2: 日历 ==================== -->
+    <!-- Tab 2: 日历 -->
     <section id="tab-calendar" class="tab-content hidden space-y-4">
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
         <div class="flex items-center justify-between mb-4">
-          <button onclick="changeCalendarMonth(-1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600">
-            <i class="fa-solid fa-chevron-left"></i>
-          </button>
+          <button onclick="changeCalendarMonth(-1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600"><i class="fa-solid fa-chevron-left"></i></button>
           <h2 id="calendarMonthTitle" class="font-bold text-base text-slate-800">日历</h2>
-          <button onclick="changeCalendarMonth(1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600">
-            <i class="fa-solid fa-chevron-right"></i>
-          </button>
+          <button onclick="changeCalendarMonth(1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
-        <div class="grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-400 mb-2">
-          <div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div>
-        </div>
+        <div class="grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-400 mb-2"><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div></div>
         <div id="calendarGrid" class="grid grid-cols-7 gap-1.5 text-center text-sm"></div>
       </div>
       <div id="calendarDayDetail" class="space-y-3"></div>
     </section>
 
-    <!-- ==================== Tab 3: 历史 ==================== -->
+    <!-- Tab 3: 历史 -->
     <section id="tab-history" class="tab-content hidden space-y-4">
       <div class="flex items-center justify-between bg-white p-3.5 rounded-xl shadow-sm border border-slate-100">
         <div>
@@ -98,7 +92,7 @@
       <div id="historyList" class="space-y-3"></div>
     </section>
 
-    <!-- ==================== Tab 4: 统计 ==================== -->
+    <!-- Tab 4: 统计 -->
     <section id="tab-stats" class="tab-content hidden space-y-4">
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-4">
         <div class="flex items-center justify-between">
@@ -111,226 +105,136 @@
         <div class="relative h-64 w-full">
           <canvas id="weightChart"></canvas>
         </div>
-        <p id="statsEmptyTip" class="text-xs text-center text-slate-400 hidden">该动作暂无历史打卡数据，完成训练归档后即可生成趋势曲线。</p>
+        <p id="statsEmptyTip" class="text-xs text-center text-slate-400 hidden">暂无历史数据</p>
       </div>
     </section>
 
-    <!-- ==================== Tab 5: 同步 ==================== -->
+    <!-- Tab 5: 同步与 AI 计划批量导入 -->
     <section id="tab-sync" class="tab-content hidden space-y-4">
-      <!-- 云端直连卡片 -->
+      <!-- 极简云同步 -->
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-4">
         <div class="flex items-center space-x-2">
-          <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
-            <i class="fa-solid fa-bolt text-lg"></i>
-          </div>
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-bolt text-lg"></i></div>
           <div>
-            <h2 class="font-bold text-slate-800 text-base">极简口令跨端云同步</h2>
-            <p class="text-xs text-slate-400">支持 JSON 导入/导出后一键直推云端</p>
+            <h2 class="font-bold text-slate-800 text-base">跨端云同步</h2>
+            <p class="text-xs text-slate-400">输入相同口令，两端实时互通</p>
           </div>
         </div>
-
         <div class="space-y-3 pt-1">
-          <div>
-            <label class="block text-xs font-medium text-slate-600 mb-1">设置您的独享口令（如：chan888）</label>
-            <div class="flex space-x-2">
-              <input 
-                type="text" 
-                id="syncPasscodeInput" 
-                value="chan888"
-                placeholder="输入专属口令..." 
-                class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" 
-              />
-              <button onclick="savePasscode()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-lg font-medium transition">
-                保存口令
-              </button>
-            </div>
+          <div class="flex space-x-2">
+            <input type="text" id="syncPasscodeInput" value="chan888" placeholder="口令..." class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" />
+            <button onclick="savePasscode()" class="bg-slate-800 text-white text-xs px-4 py-2 rounded-lg font-medium">保存口令</button>
           </div>
-
-          <div class="grid grid-cols-2 gap-3 pt-1">
-            <button onclick="pushToCloud()" id="btnPush" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-3 rounded-xl shadow-sm flex items-center justify-center space-x-1.5 text-sm transition">
-              <i class="fa-solid fa-cloud-arrow-up"></i>
-              <span>上传推送到云端</span>
+          <div class="grid grid-cols-2 gap-3">
+            <button onclick="pushToCloud()" id="btnPush" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-3 rounded-xl text-sm flex items-center justify-center space-x-1.5">
+              <i class="fa-solid fa-cloud-arrow-up"></i><span>上传推送到云端</span>
             </button>
-            <button onclick="pullFromCloud(false)" id="btnPull" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-3 rounded-xl shadow-sm flex items-center justify-center space-x-1.5 text-sm transition">
-              <i class="fa-solid fa-cloud-arrow-down"></i>
-              <span>从云端拉取</span>
+            <button onclick="pullFromCloud(false)" id="btnPull" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-3 rounded-xl text-sm flex items-center justify-center space-x-1.5">
+              <i class="fa-solid fa-cloud-arrow-down"></i><span>从云端拉取</span>
             </button>
           </div>
-
-          <div id="syncStatusBox" class="text-xs bg-slate-50 text-slate-500 p-2.5 rounded-lg border border-slate-100 flex items-center justify-between">
+          <div id="syncStatusBox" class="text-xs bg-slate-50 text-slate-500 p-2.5 rounded-lg border flex items-center justify-between">
             <span id="syncStatusText">状态：就绪</span>
             <span id="lastSyncTimeText" class="text-[11px] text-slate-400"></span>
           </div>
         </div>
       </div>
 
-      <!-- 微信文字口令秒传 -->
+      <!-- ✨ 新增：AI 计划智能批量导入卡片 -->
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-3">
         <div class="flex items-center space-x-2">
-          <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
-            <i class="fa-brands fa-weixin text-lg"></i>
-          </div>
+          <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center"><i class="fa-solid fa-wand-magic-sparkles text-lg"></i></div>
           <div>
-            <h2 class="font-bold text-slate-800 text-base">微信文字闪电同步（全量含图片）</h2>
-            <p class="text-xs text-slate-400">点「复制同步码」发给微信，另一端复制后点「粘贴导入」</p>
+            <h2 class="font-bold text-slate-800 text-base">AI 计划一键粘贴导入</h2>
+            <p class="text-xs text-slate-400">让 AI 生成 JSON 计划，在此一键粘贴即可整周替换并自动云同步</p>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-3 pt-1">
-          <button onclick="copySyncCode()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-3 rounded-xl text-xs flex items-center justify-center space-x-1.5 transition">
-            <i class="fa-regular fa-copy"></i><span>1. 一键复制全量同步码</span>
-          </button>
-          <button onclick="pasteSyncCode()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-3 rounded-xl text-xs flex items-center justify-center space-x-1.5 transition">
-            <i class="fa-regular fa-paste"></i><span>2. 粘贴同步码导入</span>
+        <div>
+          <textarea id="aiJsonInput" rows="4" placeholder="请在此处直接粘贴 AI 生成的计划 JSON 文本..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs font-mono focus:outline-none focus:border-purple-500"></textarea>
+        </div>
+        <div class="flex justify-end">
+          <button onclick="importAiJsonText()" class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg text-xs flex items-center space-x-1.5 transition">
+            <i class="fa-solid fa-file-import"></i><span>确认导入并自动同步</span>
           </button>
         </div>
       </div>
 
-      <!-- 本地文件备份兜底 -->
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-3">
-        <div class="flex items-center justify-between">
-          <div>
-            <span class="font-bold text-slate-700 text-sm">JSON 文件全量备份</span>
-            <p class="text-[11px] text-slate-400">导入后将立即同步并保存</p>
-          </div>
-          <div class="flex space-x-2">
-            <button onclick="exportBackupJSON()" class="border border-slate-200 hover:bg-slate-50 text-slate-700 py-1.5 px-3 rounded-lg text-xs font-medium">导出文件</button>
-            <label class="border border-slate-200 hover:bg-slate-50 text-slate-700 py-1.5 px-3 rounded-lg text-xs font-medium cursor-pointer">
-              导入文件
-              <input type="file" id="importJsonInput" accept=".json" class="hidden" onchange="importBackupJSON(event)" />
-            </label>
-          </div>
+      <!-- 常规文件备份 -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+        <div>
+          <h2 class="font-bold text-slate-800 text-sm">JSON 文件备份</h2>
+          <p class="text-xs text-slate-400">导出或导入完整本地文件</p>
         </div>
-        <div class="pt-2 border-t border-slate-100 flex justify-end">
-          <button onclick="resetToDefaultData()" class="text-xs text-slate-400 hover:text-rose-500">恢复出厂预置训练计划</button>
+        <div class="flex space-x-2">
+          <button onclick="exportBackupJSON()" class="border px-3 py-1.5 rounded-lg text-xs">导出</button>
+          <label class="border px-3 py-1.5 rounded-lg text-xs cursor-pointer bg-slate-50">
+            导入<input type="file" id="importJsonInput" accept=".json" class="hidden" onchange="importBackupJSON(event)" />
+          </label>
         </div>
       </div>
     </section>
-
   </main>
 
-  <!-- 组间休息倒计时悬浮窗 -->
-  <div id="restFloatingModal" class="fixed bottom-20 right-4 z-40 hidden bg-slate-900/95 backdrop-blur text-white p-3.5 rounded-2xl shadow-xl border border-slate-700 w-64">
+  <!-- 休息弹窗与导航 -->
+  <div id="restFloatingModal" class="fixed bottom-20 right-4 z-40 hidden bg-slate-900/95 text-white p-3.5 rounded-2xl shadow-xl border w-64">
     <div class="flex items-center justify-between mb-2">
-      <span class="text-xs text-slate-300"><i class="fa-solid fa-mug-hot text-emerald-400 mr-1"></i>组间休息倒计时</span>
-      <button onclick="startRestTimer(60)" class="text-[11px] text-slate-400 hover:text-white">重置60s</button>
+      <span class="text-xs text-slate-300">组间休息倒计时</span>
+      <button onclick="startRestTimer(60)" class="text-[11px] text-slate-400">重置60s</button>
     </div>
     <div class="flex items-center justify-between">
       <span id="restTimerDisplay" class="font-mono font-bold text-2xl text-emerald-400">01:00</span>
       <div class="flex space-x-1.5">
-        <button onclick="addRestTime(15)" class="bg-slate-700 hover:bg-slate-600 text-xs px-2.5 py-1.5 rounded-lg">+15s</button>
-        <button onclick="skipRestTimer()" class="bg-rose-500 hover:bg-rose-600 text-xs px-2.5 py-1.5 rounded-lg">跳过</button>
+        <button onclick="addRestTime(15)" class="bg-slate-700 text-xs px-2.5 py-1.5 rounded-lg">+15s</button>
+        <button onclick="skipRestTimer()" class="bg-rose-500 text-xs px-2.5 py-1.5 rounded-lg">跳过</button>
       </div>
     </div>
   </div>
-
-  <button onclick="startRestTimer(60)" class="fixed bottom-20 left-4 z-30 bg-white border border-slate-200 text-slate-700 shadow-md rounded-full px-3 py-2 text-xs font-medium flex items-center space-x-1">
+  <button onclick="startRestTimer(60)" class="fixed bottom-20 left-4 z-30 bg-white border text-slate-700 shadow-md rounded-full px-3 py-2 text-xs font-medium flex items-center space-x-1">
     <i class="fa-solid fa-hourglass-half text-emerald-500"></i><span>休息计时</span>
   </button>
 
-  <!-- 底部导航 -->
   <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-200 shadow-lg">
     <div class="max-w-xl mx-auto grid grid-cols-5 h-16">
-      <button onclick="switchTab('train')" id="nav-train" class="nav-btn flex flex-col items-center justify-center text-emerald-600">
-        <i class="fa-solid fa-dumbbell text-lg mb-0.5"></i><span class="text-[11px] font-medium">训练</span>
-      </button>
-      <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn flex flex-col items-center justify-center text-slate-400">
-        <i class="fa-regular fa-calendar-check text-lg mb-0.5"></i><span class="text-[11px] font-medium">日历</span>
-      </button>
-      <button onclick="switchTab('history')" id="nav-history" class="nav-btn flex flex-col items-center justify-center text-slate-400">
-        <i class="fa-solid fa-clock-rotate-left text-lg mb-0.5"></i><span class="text-[11px] font-medium">历史</span>
-      </button>
-      <button onclick="switchTab('stats')" id="nav-stats" class="nav-btn flex flex-col items-center justify-center text-slate-400">
-        <i class="fa-solid fa-chart-line text-lg mb-0.5"></i><span class="text-[11px] font-medium">统计</span>
-      </button>
-      <button onclick="switchTab('sync')" id="nav-sync" class="nav-btn flex flex-col items-center justify-center text-slate-400">
-        <i class="fa-solid fa-cloud text-lg mb-0.5"></i><span class="text-[11px] font-medium">同步</span>
-      </button>
+      <button onclick="switchTab('train')" id="nav-train" class="nav-btn flex flex-col items-center justify-center text-emerald-600"><i class="fa-solid fa-dumbbell text-lg mb-0.5"></i><span class="text-[11px]">训练</span></button>
+      <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn flex flex-col items-center justify-center text-slate-400"><i class="fa-regular fa-calendar-check text-lg mb-0.5"></i><span class="text-[11px]">日历</span></button>
+      <button onclick="switchTab('history')" id="nav-history" class="nav-btn flex flex-col items-center justify-center text-slate-400"><i class="fa-solid fa-clock-rotate-left text-lg mb-0.5"></i><span class="text-[11px]">历史</span></button>
+      <button onclick="switchTab('stats')" id="nav-stats" class="nav-btn flex flex-col items-center justify-center text-slate-400"><i class="fa-solid fa-chart-line text-lg mb-0.5"></i><span class="text-[11px]">统计</span></button>
+      <button onclick="switchTab('sync')" id="nav-sync" class="nav-btn flex flex-col items-center justify-center text-slate-400"><i class="fa-solid fa-cloud text-lg mb-0.5"></i><span class="text-[11px]">同步</span></button>
     </div>
   </nav>
 
-  <!-- 动作新增/编辑弹窗 -->
-  <div id="exerciseModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+  <!-- 动作弹窗 -->
+  <div id="exerciseModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h3 id="modalTitle" class="font-bold text-slate-800 text-base">添加/编辑动作</h3>
-        <button onclick="closeExerciseModal()" class="text-slate-400 hover:text-slate-600">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
+      <div class="flex items-center justify-between border-b pb-3"><h3 id="modalTitle" class="font-bold text-slate-800 text-base">添加/编辑动作</h3><button onclick="closeExerciseModal()"><i class="fa-solid fa-xmark text-lg"></i></button></div>
       <input type="hidden" id="editExerciseId" />
       <div class="space-y-3 text-sm">
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">动作名称 *</label>
-          <input type="text" id="exNameInput" placeholder="例如：龙门架卷腹" class="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500" />
-        </div>
+        <div><label class="block text-xs text-slate-500 mb-1">动作名称 *</label><input type="text" id="exNameInput" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
         <div class="grid grid-cols-3 gap-2">
-          <div>
-            <label class="block text-xs text-slate-500 mb-1">目标组数</label>
-            <input type="number" id="exSetsInput" value="3" min="1" class="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500" />
-          </div>
-          <div>
-            <label class="block text-xs text-slate-500 mb-1">次数/时长</label>
-            <input type="text" id="exRepsInput" value="12次" class="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500" />
-          </div>
-          <div>
-            <label class="block text-xs text-slate-500 mb-1">重量(kg)</label>
-            <input type="number" id="exWeightInput" value="20" step="0.5" class="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500" />
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">动作示意图（支持云端跨设备同步）</label>
-          <div class="flex items-center space-x-3">
-            <label class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs px-3 py-2 rounded-lg cursor-pointer font-medium transition">
-              <i class="fa-regular fa-image mr-1"></i>选择/拍照上传
-              <input type="file" id="exImageInput" accept="image/*" class="hidden" onchange="handleModalImageUpload(event)" />
-            </label>
-            <button type="button" onclick="clearModalImage()" class="text-xs text-rose-500 hover:underline">清除图片</button>
-          </div>
-          <div id="modalImagePreviewWrap" class="mt-2.5 hidden">
-            <img id="modalImagePreview" src="" alt="预览" class="h-24 rounded-lg object-cover border border-slate-200 shadow-xs" />
-          </div>
+          <div><label class="block text-xs text-slate-500 mb-1">组数</label><input type="number" id="exSetsInput" value="3" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+          <div><label class="block text-xs text-slate-500 mb-1">次数/时长</label><input type="text" id="exRepsInput" value="12次" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+          <div><label class="block text-xs text-slate-500 mb-1">重量(kg)</label><input type="number" id="exWeightInput" value="20" class="w-full border rounded-lg px-3 py-2 text-sm" /></div>
         </div>
       </div>
-      <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
-        <button onclick="closeExerciseModal()" class="px-4 py-2 rounded-lg text-sm bg-slate-100 text-slate-600">取消</button>
-        <button onclick="saveExerciseModal()" class="px-5 py-2 rounded-lg text-sm text-white bg-emerald-500 font-medium">保存动作</button>
-      </div>
+      <div class="flex justify-end space-x-2 pt-2 border-t"><button onclick="closeExerciseModal()" class="px-4 py-2 bg-slate-100 rounded-lg text-sm">取消</button><button onclick="saveExerciseModal()" class="px-5 py-2 bg-emerald-500 text-white rounded-lg text-sm">保存</button></div>
     </div>
   </div>
 
-  <!-- 全屏图片查看器弹窗 -->
-  <div id="imageViewerModal" onclick="closeImageViewer()" class="fixed inset-0 z-50 hidden bg-black/90 flex flex-col items-center justify-center p-4 cursor-zoom-out">
-    <img id="fullScreenImage" src="" alt="动作示意图" class="w-72 h-72 sm:w-96 sm:h-96 rounded-xl shadow-2xl object-contain bg-white" />
-    <p id="fullScreenCaption" class="text-white text-sm font-medium mt-4"></p>
-    <span class="text-slate-400 text-xs mt-1">点击屏幕任意处关闭</span>
-  </div>
-
   <div id="toastBox" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-800 text-white text-xs px-4 py-2.5 rounded-full shadow-lg flex items-center space-x-2">
-    <i class="fa-solid fa-circle-info text-emerald-400"></i>
-    <span id="toastText"></span>
+    <i class="fa-solid fa-circle-info text-emerald-400"></i><span id="toastText"></span>
   </div>
 
   <script>
     function createSvgPlaceholder(title, subtitle, colorHex) {
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="280" viewBox="0 0 400 280">
-        <rect width="100%" height="100%" fill="${colorHex}" rx="16"/>
-        <circle cx="200" cy="100" r="42" fill="rgba(255,255,255,0.18)"/>
-        <path d="M175 100 h50 M185 85 v30 M215 85 v30" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
-        <text x="200" y="180" font-family="sans-serif" font-size="24" font-weight="bold" fill="#ffffff" text-anchor="middle">${title}</text>
-        <text x="200" y="215" font-family="sans-serif" font-size="14" fill="rgba(255,255,255,0.85)" text-anchor="middle">${subtitle}</text>
-      </svg>`;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="280" viewBox="0 0 400 280"><rect width="100%" height="100%" fill="${colorHex}" rx="16"/><circle cx="200" cy="100" r="42" fill="rgba(255,255,255,0.18)"/><path d="M175 100 h50 M185 85 v30 M215 85 v30" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/><text x="200" y="180" font-family="sans-serif" font-size="24" font-weight="bold" fill="#ffffff" text-anchor="middle">${title}</text><text x="200" y="215" font-family="sans-serif" font-size="14" fill="rgba(255,255,255,0.85)" text-anchor="middle">${subtitle}</text></svg>`;
       return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
     }
-
     const PRESET_SVGS = {
-      "悬垂抬腿": createSvgPlaceholder("悬垂抬腿", "骨盆后倾卷腹 · 控制下放", "#059669"),
-      "绳索伐木": createSvgPlaceholder("绳索伐木", "核心抗旋发力 · 腹斜肌强化", "#0284c7"),
-      "腹轮": createSvgPlaceholder("腹轮推行", "收紧核心不塌腰 · 顶峰收缩", "#7c3aed")
+      "悬垂抬腿": createSvgPlaceholder("悬垂抬腿", "骨盆后倾卷腹", "#059669"),
+      "绳索伐木": createSvgPlaceholder("绳索伐木", "核心抗旋发力", "#0284c7"),
+      "腹轮": createSvgPlaceholder("腹轮推行", "收紧核心不塌腰", "#7c3aed")
     };
-
-    function isValidImgSrc(src) {
-      return typeof src === "string" && src.startsWith("data:image/");
-    }
+    function isValidImgSrc(src) { return typeof src === "string" && src.startsWith("data:image/"); }
 
     function getInitialData() {
       return {
@@ -338,39 +242,22 @@
         passcode: "chan888",
         lastSync: "",
         days: {
-          mon: { name: "周一", theme: "胸+三头", exercises: [
-            { id: "m1", name: "平板杠铃卧推", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 60, image: "" },
-            { id: "m2", name: "上斜哑铃卧推", targetSets: 4, completedSets: 0, reps: "10-12次", weight: 22, image: "" }
-          ]},
-          tue: { name: "周二", theme: "背+二头", exercises: [
-            { id: "tu1", name: "高位下拉", targetSets: 4, completedSets: 0, reps: "10-12次", weight: 50, image: "" },
-            { id: "tu2", name: "坐姿划船", targetSets: 4, completedSets: 0, reps: "10-12次", weight: 45, image: "" }
-          ]},
+          mon: { name: "周一", theme: "胸+三头", exercises: [{ id: "m1", name: "平板杠铃卧推", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 60, image: "" }] },
+          tue: { name: "周二", theme: "背+二头", exercises: [{ id: "tu1", name: "高位下拉", targetSets: 4, completedSets: 0, reps: "10-12次", weight: 50, image: "" }] },
           wed: { name: "周三", theme: "有氧日", exercises: [
             { id: "w1", name: "龙门架卷腹", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 20, image: "" },
-            { id: "w2", name: "悬垂抬腿", targetSets: 3, completedSets: 0, reps: "15次", weight: 20, image: PRESET_SVGS["悬垂抬腿"] },
-            { id: "w3", name: "绳索伐木", targetSets: 3, completedSets: 0, reps: "15次", weight: 20, image: PRESET_SVGS["绳索伐木"] },
-            { id: "w4", name: "腹轮", targetSets: 3, completedSets: 0, reps: "10-12次", weight: 20, image: PRESET_SVGS["腹轮"] },
-            { id: "w5", name: "跑步机", targetSets: 1, completedSets: 0, reps: "20分钟", weight: 0, image: "" }
+            { id: "w2", name: "悬垂抬腿", targetSets: 3, completedSets: 0, reps: "15次", weight: 20, image: PRESET_SVGS["悬垂抬腿"] }
           ]},
-          thu: { name: "周四", theme: "肩部训练", exercises: [
-            { id: "th1", name: "坐姿哑铃推举", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 18, image: "" }
-          ]},
-          fri: { name: "周五", theme: "腿部训练", exercises: [
-            { id: "f1", name: "杠铃深蹲", targetSets: 4, completedSets: 0, reps: "8-10次", weight: 80, image: "" }
-          ]},
-          sat: { name: "周六", theme: "核心+有氧", exercises: [
-            { id: "sa1", name: "平板支撑", targetSets: 3, completedSets: 0, reps: "60秒", weight: 0, image: "" }
-          ]},
-          sun: { name: "周日", theme: "休息恢复", exercises: [
-            { id: "su1", name: "全身拉伸放松", targetSets: 1, completedSets: 0, reps: "15分钟", weight: 0, image: "" }
-          ]}
+          thu: { name: "周四", theme: "肩部训练", exercises: [{ id: "th1", name: "坐姿哑铃推举", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 18, image: "" }] },
+          fri: { name: "周五", theme: "腿部训练", exercises: [{ id: "f1", name: "杠铃深蹲", targetSets: 4, completedSets: 0, reps: "8-10次", weight: 80, image: "" }] },
+          sat: { name: "周六", theme: "核心+有氧", exercises: [{ id: "sa1", name: "平板支撑", targetSets: 3, completedSets: 0, reps: "60秒", weight: 0, image: "" }] },
+          sun: { name: "周日", theme: "休息恢复", exercises: [{ id: "su1", name: "全身拉伸放松", targetSets: 1, completedSets: 0, reps: "15分钟", weight: 0, image: "" }] }
         },
         history: []
       };
     }
 
-    const STORAGE_KEY = "FIT_NTFY_V8_FIX";
+    const STORAGE_KEY = "FIT_NTFY_V9";
     const DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
     let appData = loadState();
     let currentTab = "train";
@@ -396,22 +283,16 @@
 
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("FIT_NTFY_V7_CHUNK") || localStorage.getItem("FIT_NTFY_V6_IMG") || localStorage.getItem("FIT_NTFY_V5");
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("FIT_NTFY_V8") || localStorage.getItem("FIT_NTFY_V7_CHUNK");
         if (!raw) return getInitialData();
         const parsed = JSON.parse(raw);
         if (!parsed.passcode || parsed.passcode.startsWith("ghp_")) parsed.passcode = "chan888";
         return sanitizeData(Object.assign(getInitialData(), parsed));
-      } catch (e) {
-        return getInitialData();
-      }
+      } catch (e) { return getInitialData(); }
     }
 
     function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-      } catch (e) {
-        showToast("本地存储已满");
-      }
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); } catch(e){}
     }
 
     function showToast(msg) {
@@ -423,35 +304,23 @@
     }
 
     function formatHMS(sec) {
-      const h = String(Math.floor(sec / 3600)).padStart(2, "0");
-      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
-      const s = String(sec % 60).padStart(2, "0");
-      return `${h}:${m}:${s}`;
+      return `${String(Math.floor(sec/3600)).padStart(2,"0")}:${String(Math.floor((sec%3600)/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`;
     }
-
     function formatDateYMD(d) {
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
     }
 
     function toggleWorkoutTimer() {
       const btn = document.getElementById("workoutTimerBtn");
-      if (workoutInterval) {
-        clearInterval(workoutInterval);
-        workoutInterval = null;
-        btn.innerHTML = '<i class="fa-solid fa-play"></i>';
-      } else {
-        workoutInterval = setInterval(() => {
-          workoutSeconds++;
-          document.getElementById("workoutTimerDisplay").textContent = formatHMS(workoutSeconds);
-        }, 1000);
+      if (workoutInterval) { clearInterval(workoutInterval); workoutInterval = null; btn.innerHTML = '<i class="fa-solid fa-play"></i>'; }
+      else {
+        workoutInterval = setInterval(() => { workoutSeconds++; document.getElementById("workoutTimerDisplay").textContent = formatHMS(workoutSeconds); }, 1000);
         btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
       }
     }
-
     function resetWorkoutTimer() {
       if (workoutInterval) clearInterval(workoutInterval);
-      workoutInterval = null;
-      workoutSeconds = 0;
+      workoutInterval = null; workoutSeconds = 0;
       document.getElementById("workoutTimerDisplay").textContent = "00:00:00";
       document.getElementById("workoutTimerBtn").innerHTML = '<i class="fa-solid fa-play"></i>';
     }
@@ -459,27 +328,16 @@
     function startRestTimer(s) {
       restSeconds = s;
       document.getElementById("restFloatingModal").classList.remove("hidden");
-      document.getElementById("restTimerDisplay").textContent = `00:${String(s).padStart(2, "0")}`;
+      document.getElementById("restTimerDisplay").textContent = `00:${String(s).padStart(2,"0")}`;
       if (restInterval) clearInterval(restInterval);
       restInterval = setInterval(() => {
         restSeconds--;
-        if (restSeconds <= 0) {
-          skipRestTimer();
-          showToast("组间休息结束，继续下一组！");
-        } else {
-          const m = String(Math.floor(restSeconds / 60)).padStart(2, "0");
-          const sec = String(restSeconds % 60).padStart(2, "0");
-          document.getElementById("restTimerDisplay").textContent = `${m}:${sec}`;
-        }
+        if (restSeconds <= 0) { skipRestTimer(); showToast("休息结束！"); }
+        else { document.getElementById("restTimerDisplay").textContent = `00:${String(restSeconds).padStart(2,"0")}`; }
       }, 1000);
     }
-
     function addRestTime(s) { restSeconds += s; }
-    function skipRestTimer() {
-      if (restInterval) clearInterval(restInterval);
-      restInterval = null;
-      document.getElementById("restFloatingModal").classList.add("hidden");
-    }
+    function skipRestTimer() { if (restInterval) clearInterval(restInterval); restInterval = null; document.getElementById("restFloatingModal").classList.add("hidden"); }
 
     function switchTab(t) {
       currentTab = t;
@@ -487,7 +345,6 @@
       document.getElementById(`tab-${t}`).classList.remove("hidden");
       document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.replace("text-emerald-600", "text-slate-400"));
       document.getElementById(`nav-${t}`).classList.replace("text-slate-400", "text-emerald-600");
-
       if (t === "train") renderTrainTab();
       if (t === "calendar") renderCalendarTab();
       if (t === "history") renderHistoryTab();
@@ -495,6 +352,7 @@
       if (t === "sync") renderSyncTab();
     }
 
+    // 训练渲染
     function renderTrainTab() {
       const selector = document.getElementById("daySelector");
       selector.innerHTML = "";
@@ -513,8 +371,8 @@
       const listEl = document.getElementById("exerciseList");
       listEl.innerHTML = "";
 
-      if (curDay.exercises.length === 0) {
-        listEl.innerHTML = `<div class="bg-white rounded-xl p-8 text-center text-slate-400 text-sm border border-slate-100">今日暂无训练动作，点击右上角添加</div>`;
+      if (!curDay.exercises || curDay.exercises.length === 0) {
+        listEl.innerHTML = `<div class="bg-white rounded-xl p-8 text-center text-slate-400 text-sm border border-slate-100">今日暂无动作</div>`;
         return;
       }
 
@@ -526,24 +384,12 @@
 
         const card = document.createElement("div");
         card.className = `bg-white rounded-xl p-4 shadow-sm border transition ${isDone ? 'border-emerald-400 bg-emerald-50/20' : 'border-slate-100'}`;
-
         card.innerHTML = `
           <div class="flex items-start justify-between gap-3">
             <div class="flex items-start space-x-3 flex-1 min-w-0">
-              ${
-                validImg
-                  ? `<img src="${ex.image}" alt="缩略图" onclick="openImageViewer('${ex.id}')" onerror="this.style.display='none'" class="w-16 h-16 rounded-lg object-cover border border-slate-200 flex-shrink-0 cursor-zoom-in hover:opacity-90 transition" title="点击全屏查看"/>`
-                  : `<label class="w-16 h-16 rounded-lg bg-slate-50 border border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 hover:text-emerald-500 hover:border-emerald-300 cursor-pointer flex-shrink-0 transition" title="点击上传动作图解">
-                      <i class="fa-regular fa-image text-sm"></i>
-                      <span class="text-[10px] mt-0.5">传图</span>
-                      <input type="file" accept="image/*" class="hidden" onchange="quickUploadExerciseImg(event, '${ex.id}')" />
-                    </label>`
-              }
+              ${validImg ? `<img src="${ex.image}" alt="图" class="w-16 h-16 rounded-lg object-cover border flex-shrink-0"/>` : `<div class="w-16 h-16 rounded-lg bg-slate-50 border flex items-center justify-center text-slate-400 text-xs flex-shrink-0">无图</div>`}
               <div class="flex-1 min-w-0">
-                <div class="flex items-center space-x-1.5">
-                  <h3 class="font-bold text-slate-800 text-base truncate">${idx + 1}. ${ex.name}</h3>
-                  ${isDone ? '<i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>' : ''}
-                </div>
+                <h3 class="font-bold text-slate-800 text-base truncate">${idx + 1}. ${ex.name}</h3>
                 <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
                   <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-xs font-medium">${ex.targetSets}组</span>
                   <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-xs font-medium">${ex.reps}</span>
@@ -551,41 +397,21 @@
                 </div>
               </div>
             </div>
-
             <div class="flex items-center space-x-0.5 text-slate-400">
-              <button onclick="moveExercise(${idx}, -1)" class="w-7 h-7 rounded hover:bg-slate-100 hover:text-slate-700 flex items-center justify-center" title="上移">
-                <i class="fa-solid fa-arrow-up text-xs"></i>
-              </button>
-              <button onclick="moveExercise(${idx}, 1)" class="w-7 h-7 rounded hover:bg-slate-100 hover:text-slate-700 flex items-center justify-center" title="下移">
-                <i class="fa-solid fa-arrow-down text-xs"></i>
-              </button>
-              <button onclick="openExerciseModal('${ex.id}')" class="w-7 h-7 rounded hover:bg-slate-100 hover:text-emerald-600 flex items-center justify-center" title="编辑">
-                <i class="fa-solid fa-pen-to-square text-xs"></i>
-              </button>
-              <button onclick="deleteExercise('${ex.id}')" class="w-7 h-7 rounded hover:bg-rose-50 hover:text-rose-500 flex items-center justify-center" title="删除">
-                <i class="fa-regular fa-trash-can text-xs"></i>
-              </button>
+              <button onclick="openExerciseModal('${ex.id}')" class="w-7 h-7 rounded hover:bg-slate-100 hover:text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
+              <button onclick="deleteExercise('${ex.id}')" class="w-7 h-7 rounded hover:bg-rose-50 hover:text-rose-500 flex items-center justify-center"><i class="fa-regular fa-trash-can text-xs"></i></button>
             </div>
           </div>
-
           <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
             <div class="flex-1 mr-4">
-              <div class="flex justify-between text-xs mb-1">
-                <span class="text-slate-500">今日打卡进度</span>
-                <span class="font-bold ${isDone ? 'text-emerald-600' : 'text-slate-700'}">${ex.completedSets} / ${ex.targetSets} 组</span>
-              </div>
-              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${progressPct}%"></div>
-              </div>
+              <div class="flex justify-between text-xs mb-1"><span class="text-slate-500">进度</span><span class="font-bold">${ex.completedSets}/${ex.targetSets}组</span></div>
+              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width: ${progressPct}%"></div></div>
             </div>
             <div class="flex items-center space-x-1.5">
-              <button onclick="changeSetCount('${ex.id}', -1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center">-</button>
-              <button onclick="changeSetCount('${ex.id}', 1)" class="px-3.5 h-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold flex items-center space-x-1 shadow-xs">
-                <i class="fa-solid fa-check"></i><span>+1组</span>
-              </button>
+              <button onclick="changeSetCount('${ex.id}', -1)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold">-</button>
+              <button onclick="changeSetCount('${ex.id}', 1)" class="px-3.5 h-8 rounded-lg bg-emerald-500 text-white text-xs font-bold">+1组</button>
             </div>
-          </div>
-        `;
+          </div>`;
         listEl.appendChild(card);
       });
     }
@@ -596,612 +422,179 @@
       ex.completedSets = Math.max(0, ex.completedSets + d);
       saveState();
       renderTrainTab();
-      if (d > 0) {
-        if (!workoutInterval && workoutSeconds === 0) toggleWorkoutTimer();
-        startRestTimer(60);
-      }
+      if (d > 0) startRestTimer(60);
     }
-
-    function moveExercise(index, direction) {
-      const list = appData.days[appData.selectedDay].exercises;
-      const target = index + direction;
-      if (target < 0 || target >= list.length) return;
-      const temp = list[index];
-      list[index] = list[target];
-      list[target] = temp;
-      saveState();
-      renderTrainTab();
-    }
-
     function deleteExercise(id) {
-      if (!confirm("确定删除该动作？")) return;
-      const cur = appData.days[appData.selectedDay];
-      cur.exercises = cur.exercises.filter(e => e.id !== id);
-      saveState();
-      renderTrainTab();
-      showToast("动作已删除");
+      if (!confirm("删除动作？")) return;
+      appData.days[appData.selectedDay].exercises = appData.days[appData.selectedDay].exercises.filter(e => e.id !== id);
+      saveState(); renderTrainTab();
     }
-
     function editDayTheme() {
       const cur = appData.days[appData.selectedDay];
-      const res = prompt("修改训练主题", cur.theme);
+      const res = prompt("修改主题", cur.theme);
       if (res) { cur.theme = res.trim(); saveState(); renderTrainTab(); }
     }
-
-    function compressImageForCloud(file, callback) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-          let maxDim = 160;
-          let quality = 0.55;
-          let dataUrl = "";
-          while (maxDim >= 80) {
-            const canvas = document.createElement("canvas");
-            let w = img.width, h = img.height;
-            if (w > h && w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-            else if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
-            canvas.width = w; canvas.height = h;
-            const ctx = canvas.getContext("2d");
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, w, h);
-            ctx.drawImage(img, 0, 0, w, h);
-            dataUrl = canvas.toDataURL("image/jpeg", quality);
-            if (dataUrl.length <= 3200) break;
-            maxDim -= 25;
-            quality -= 0.1;
-          }
-          callback(dataUrl);
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function quickUploadExerciseImg(event, exId) {
-      const file = event.target.files[0];
-      if (!file) return;
-      compressImageForCloud(file, (base64) => {
-        const ex = appData.days[appData.selectedDay].exercises.find(i => i.id === exId);
-        if (ex) {
-          ex.image = base64;
-          saveState();
-          renderTrainTab();
-          showToast("图片已保存！点击上传即可同步");
-        }
-      });
-    }
-
-    function handleModalImageUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      compressImageForCloud(file, (base64) => {
-        modalTempImage = base64;
-        document.getElementById("modalImagePreview").src = base64;
-        document.getElementById("modalImagePreviewWrap").classList.remove("hidden");
-      });
-    }
-
-    function clearModalImage() {
-      modalTempImage = "";
-      document.getElementById("modalImagePreviewWrap").classList.add("hidden");
-    }
-
-    function openImageViewer(exId) {
-      const ex = appData.days[appData.selectedDay].exercises.find(i => i.id === exId);
-      if (!ex || !isValidImgSrc(ex.image)) return;
-      document.getElementById("fullScreenImage").src = ex.image;
-      document.getElementById("fullScreenCaption").textContent = `${ex.name}（${ex.targetSets}组 × ${ex.reps} ${ex.weight > 0 ? ex.weight + 'kg' : ''}）`;
-      document.getElementById("imageViewerModal").classList.remove("hidden");
-    }
-
-    function closeImageViewer() {
-      document.getElementById("imageViewerModal").classList.add("hidden");
-    }
-
     function openExerciseModal(exId = null) {
-      const idInput = document.getElementById("editExerciseId");
-      const previewWrap = document.getElementById("modalImagePreviewWrap");
-      const previewImg = document.getElementById("modalImagePreview");
-
       if (exId) {
         const ex = appData.days[appData.selectedDay].exercises.find(e => e.id === exId);
-        if (!ex) return;
-        document.getElementById("modalTitle").textContent = "编辑训练动作";
-        idInput.value = ex.id;
+        document.getElementById("editExerciseId").value = ex.id;
         document.getElementById("exNameInput").value = ex.name;
         document.getElementById("exSetsInput").value = ex.targetSets;
         document.getElementById("exRepsInput").value = ex.reps;
         document.getElementById("exWeightInput").value = ex.weight;
-        modalTempImage = isValidImgSrc(ex.image) ? ex.image : "";
       } else {
-        document.getElementById("modalTitle").textContent = "添加新训练动作";
-        idInput.value = "";
+        document.getElementById("editExerciseId").value = "";
         document.getElementById("exNameInput").value = "";
-        document.getElementById("exSetsInput").value = 3;
-        document.getElementById("exRepsInput").value = "12次";
-        document.getElementById("exWeightInput").value = 20;
-        modalTempImage = "";
-      }
-
-      if (modalTempImage) {
-        previewImg.src = modalTempImage;
-        previewWrap.classList.remove("hidden");
-      } else {
-        previewWrap.classList.add("hidden");
       }
       document.getElementById("exerciseModal").classList.remove("hidden");
     }
-
-    function closeExerciseModal() {
-      document.getElementById("exerciseModal").classList.add("hidden");
-    }
-
+    function closeExerciseModal() { document.getElementById("exerciseModal").classList.add("hidden"); }
     function saveExerciseModal() {
       const id = document.getElementById("editExerciseId").value;
       const name = document.getElementById("exNameInput").value.trim();
       const sets = parseInt(document.getElementById("exSetsInput").value) || 3;
       const reps = document.getElementById("exRepsInput").value.trim() || "12次";
       const weight = parseFloat(document.getElementById("exWeightInput").value) || 0;
-      if (!name) { showToast("请输入动作名称"); return; }
-
+      if (!name) return;
       const cur = appData.days[appData.selectedDay];
       if (id) {
         const ex = cur.exercises.find(e => e.id === id);
-        if (ex) {
-          ex.name = name;
-          ex.targetSets = sets;
-          ex.reps = reps;
-          ex.weight = weight;
-          ex.image = modalTempImage;
-        }
+        if (ex) { ex.name = name; ex.targetSets = sets; ex.reps = reps; ex.weight = weight; }
       } else {
-        cur.exercises.push({
-          id: "ex_" + Date.now(),
-          name,
-          targetSets: sets,
-          completedSets: 0,
-          reps,
-          weight,
-          image: modalTempImage
-        });
+        cur.exercises.push({ id: "ex_" + Date.now(), name, targetSets: sets, completedSets: 0, reps, weight, image: "" });
       }
-      saveState();
-      closeExerciseModal();
-      renderTrainTab();
-      showToast("动作已保存");
+      saveState(); closeExerciseModal(); renderTrainTab();
     }
 
     function finishTodayWorkout() {
       const cur = appData.days[appData.selectedDay];
-      const done = cur.exercises.filter(e => e.completedSets > 0);
-      const itemsToSave = (done.length > 0 ? done : cur.exercises).map(e => ({
-        name: e.name,
-        completedSets: e.completedSets || e.targetSets,
-        reps: e.reps,
-        weight: e.weight
-      }));
-
       appData.history.unshift({
-        id: "rec_" + Date.now(),
-        date: formatDateYMD(new Date()),
-        time: new Date().toTimeString().slice(0, 5),
-        dayTitle: `${cur.name} · ${cur.theme}`,
-        durationSeconds: workoutSeconds,
-        items: itemsToSave
+        id: "rec_" + Date.now(), date: formatDateYMD(new Date()), time: new Date().toTimeString().slice(0, 5),
+        dayTitle: `${cur.name} · ${cur.theme}`, durationSeconds: workoutSeconds,
+        items: cur.exercises.map(e => ({ name: e.name, completedSets: e.completedSets || e.targetSets, weight: e.weight }))
       });
       cur.exercises.forEach(e => e.completedSets = 0);
-      resetWorkoutTimer();
-      skipRestTimer();
-      saveState();
-      renderTrainTab();
-      showToast("今日训练已归档！");
+      resetWorkoutTimer(); saveState(); renderTrainTab(); showToast("今日训练已归档！");
     }
 
-    function renderCalendarTab() {
-      document.getElementById("calendarMonthTitle").textContent = `${calYear}年 ${calMonth + 1}月`;
-      const grid = document.getElementById("calendarGrid");
-      grid.innerHTML = "";
-      const firstDay = new Date(calYear, calMonth, 1);
-      const startW = (firstDay.getDay() + 6) % 7;
-      const totalD = new Date(calYear, calMonth + 1, 0).getDate();
-      const hasRec = new Set(appData.history.map(r => r.date));
-
-      for (let i = 0; i < startW; i++) grid.appendChild(document.createElement("div"));
-      for (let d = 1; d <= totalD; d++) {
-        const dStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-        const b = document.createElement("button");
-        b.className = `h-10 rounded-xl text-xs font-medium flex flex-col items-center justify-center ${selectedCalendarDateStr === dStr ? 'bg-slate-900 text-white' : hasRec.has(dStr) ? 'bg-emerald-100 text-emerald-800 font-bold' : 'bg-slate-50'}`;
-        b.innerHTML = `<span>${d}</span>${hasRec.has(dStr) ? '<span class="w-1 h-1 rounded-full bg-emerald-500 mt-0.5"></span>' : ''}`;
-        b.onclick = () => { selectedCalendarDateStr = dStr; renderCalendarTab(); };
-        grid.appendChild(b);
+    // ✨ 核心优化：AI JSON 智能文本粘贴导入
+    function importAiJsonText() {
+      const rawText = document.getElementById("aiJsonInput").value.trim();
+      if (!rawText) { showToast("请先粘贴 AI 生成的 JSON 内容"); return; }
+      try {
+        // 自动清洗可能带有 Markdown 的代码块符号
+        let cleanStr = rawText;
+        if (cleanStr.includes("```json")) {
+          cleanStr = cleanStr.split("```json")[1].split("```")[0].trim();
+        } else if (cleanStr.includes("```")) {
+          cleanStr = cleanStr.split("```")[1].split("```")[0].trim();
+        }
+        
+        const imported = JSON.parse(cleanStr);
+        if (!imported.days || !imported.days.mon) {
+          throw new Error("JSON 结构缺少 days 数据");
+        }
+        
+        appData = sanitizeData(Object.assign(appData, imported));
+        saveState();
+        document.getElementById("aiJsonInput").value = "";
+        switchTab("train");
+        showToast("✨ AI 计划导入成功！正在为您自动推送到云端...");
+        
+        // 导入成功后自动推送到云端，实现一步到位
+        setTimeout(() => { pushToCloud(); }, 600);
+      } catch (err) {
+        showToast("解析失败：请确保复制的是完整的标准 JSON");
       }
-      const recs = appData.history.filter(r => r.date === selectedCalendarDateStr);
-      document.getElementById("calendarDayDetail").innerHTML = recs.length === 0 ? `<div class="bg-white p-5 rounded-xl border border-slate-100 text-center text-xs text-slate-400">${selectedCalendarDateStr} 当日无打卡记录</div>` : recs.map(r => `
-        <div class="bg-white p-4 rounded-xl border border-slate-100 text-xs space-y-1.5 shadow-xs">
-          <div class="flex justify-between font-bold text-slate-700 border-b border-slate-100 pb-1.5">
-            <span>${r.dayTitle} (${r.time})</span>
-            <span class="text-emerald-600">用时 ${formatHMS(r.durationSeconds || 0)}</span>
-          </div>
-          <div class="text-slate-600 pt-1 space-y-1">${r.items.map(i => `<div class="flex justify-between"><span>${i.name}</span><span>${i.completedSets}组 · <b>${i.weight > 0 ? i.weight + 'kg' : (i.reps || '')}</b></span></div>`).join("")}</div>
-        </div>
-      `).join("");
     }
 
-    function changeCalendarMonth(d) {
-      calMonth += d;
-      if (calMonth < 0) { calMonth = 11; calYear--; }
-      if (calMonth > 11) { calMonth = 0; calYear++; }
-      renderCalendarTab();
-    }
-
-    function renderHistoryTab() {
-      document.getElementById("historyCountText").textContent = `共 ${appData.history.length} 条归档`;
-      document.getElementById("historyList").innerHTML = appData.history.length === 0
-        ? `<div class="bg-white p-8 rounded-xl border border-slate-100 text-center text-xs text-slate-400">暂无打卡历史记录</div>`
-        : appData.history.map(r => `
-          <div class="bg-white p-4 rounded-xl border border-slate-100 text-xs space-y-2 shadow-xs">
-            <div class="flex justify-between items-center">
-              <div>
-                <div class="font-bold text-slate-800 text-sm">${r.dayTitle}</div>
-                <div class="text-slate-400 mt-0.5">${r.date} ${r.time} · 用时 ${formatHMS(r.durationSeconds || 0)}</div>
-              </div>
-              <button onclick="deleteHistory('${r.id}')" class="text-slate-400 hover:text-rose-500 p-1.5"><i class="fa-regular fa-trash-can"></i></button>
-            </div>
-            <div class="bg-slate-50 p-2.5 rounded-lg space-y-1">
-              ${r.items.map(i => `<div class="flex justify-between"><span>${i.name}</span><span class="text-slate-500">${i.completedSets}组 · <b class="text-emerald-600">${i.weight > 0 ? i.weight + 'kg' : (i.reps || '')}</b></span></div>`).join("")}
-            </div>
-          </div>
-        `).join("");
-    }
-
-    function deleteHistory(id) {
-      if (!confirm("删除这条记录？")) return;
-      appData.history = appData.history.filter(i => i.id !== id);
-      saveState();
-      renderHistoryTab();
-    }
-
-    function clearAllHistory() {
-      if (confirm("确定清空所有历史记录吗？")) { appData.history = []; saveState(); renderHistoryTab(); }
-    }
-
-    function renderStatsTab() {
-      const select = document.getElementById("statsExerciseSelect");
-      const names = new Set();
-      DAY_ORDER.forEach(k => appData.days[k].exercises.forEach(e => names.add(e.name)));
-      appData.history.forEach(r => r.items.forEach(i => names.add(i.name)));
-      select.innerHTML = Array.from(names).map(n => `<option value="${n}">${n}</option>`).join("");
-      renderStatsChart();
-    }
-
-    function renderStatsChart() {
-      const name = document.getElementById("statsExerciseSelect").value;
-      const tip = document.getElementById("statsEmptyTip");
-      const pts = [];
-      [...appData.history].reverse().forEach(r => {
-        const item = r.items.find(i => i.name === name);
-        if (item) pts.push({ label: r.date.slice(5), weight: item.weight || 0 });
-      });
-      if (pts.length === 0) {
-        tip.classList.remove("hidden");
-        pts.push({ label: "当前预设", weight: 20 });
-      } else {
-        tip.classList.add("hidden");
-      }
-      const ctx = document.getElementById("weightChart").getContext("2d");
-      if (weightChartInstance) weightChartInstance.destroy();
-      weightChartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: pts.map(p => p.label),
-          datasets: [{
-            label: `${name} 配重 (kg)`,
-            data: pts.map(p => p.weight),
-            borderColor: "#10b981",
-            backgroundColor: "rgba(16, 185, 129, 0.12)",
-            fill: true,
-            tension: 0.3
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-    }
-
+    // 基础云同步
     function renderSyncTab() {
       document.getElementById("syncPasscodeInput").value = appData.passcode || "chan888";
       if (appData.lastSync) document.getElementById("lastSyncTimeText").textContent = `上次同步: ${appData.lastSync}`;
     }
-
     function savePasscode() {
-      const code = document.getElementById("syncPasscodeInput").value.trim();
-      if (!code) { showToast("口令不能为空"); return; }
-      appData.passcode = code;
-      saveState();
-      showToast(`口令「${code}」已保存！`);
+      appData.passcode = document.getElementById("syncPasscodeInput").value.trim() || "chan888";
+      saveState(); showToast("口令已保存");
     }
-
     function updateSyncStatus(text, ok) {
       const el = document.getElementById("syncStatusText");
-      const dot = document.getElementById("cloudStatusDot");
       el.textContent = "状态：" + text;
       el.className = ok ? "text-emerald-600 font-medium" : "text-rose-500 font-medium";
-      dot.className = `w-2 h-2 rounded-full ${ok ? 'bg-emerald-400' : 'bg-rose-400'}`;
-    }
-
-    function utf8ToBase64(str) {
-      return window.btoa(unescape(encodeURIComponent(str)));
-    }
-    function base64ToUtf8(str) {
-      return decodeURIComponent(escape(window.atob(str)));
-    }
-
-    function shrinkDataUrl(dataUrl) {
-      return new Promise((resolve) => {
-        if (!dataUrl || dataUrl.length <= 3200) return resolve(dataUrl);
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const maxD = 120;
-          let w = img.width, h = img.height;
-          if (w > h && w > maxD) { h = Math.round((h * maxD) / w); w = maxD; }
-          else if (h > maxD) { w = Math.round((w * maxD) / h); h = maxD; }
-          canvas.width = w; canvas.height = h;
-          const ctx = canvas.getContext("2d");
-          ctx.fillStyle = "#fff";
-          ctx.fillRect(0, 0, w, h);
-          ctx.drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL("image/jpeg", 0.5));
-        };
-        img.onerror = () => resolve("");
-        img.src = dataUrl;
-      });
     }
 
     async function pushToCloud() {
-      const code = document.getElementById("syncPasscodeInput").value.trim() || "chan888";
-      appData.passcode = code;
-      saveState();
-
+      const code = appData.passcode || "chan888";
       const btn = document.getElementById("btnPush");
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>上传中...</span>';
-      updateSyncStatus("正在打包训练计划与图片...", true);
-
-      const topic = "fit_butler_cn_" + encodeURIComponent(code);
-      const clone = JSON.parse(JSON.stringify(appData));
-      const imgPackets = [];
-
-      for (const k of DAY_ORDER) {
-        for (const e of clone.days[k].exercises) {
-          if (isValidImgSrc(e.image)) {
-            if (e.image.startsWith("data:image/svg+xml")) {
-              e.image = "__SVG__";
-            } else {
-              const compactImg = await shrinkDataUrl(e.image);
-              imgPackets.push({ id: e.id, name: e.name, img: compactImg });
-              e.image = "";
-            }
-          } else {
-            e.image = "";
-          }
-        }
-      }
-
+      if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>推送中...</span>'; }
+      updateSyncStatus("正在同步到云端...", true);
       try {
-        const resMain = await fetch(`https://ntfy.sh/${topic}`, {
-          method: "POST",
-          body: "FITMAIN:" + utf8ToBase64(JSON.stringify(clone))
+        const res = await fetch(`https://ntfy.sh/fit_butler_cn_${encodeURIComponent(code)}`, {
+          method: "POST", body: "FITMAIN:" + window.btoa(unescape(encodeURIComponent(JSON.stringify(appData))))
         });
-        if (!resMain.ok) throw new Error("主数据上传失败");
-
-        for (let i = 0; i < imgPackets.length; i++) {
-          updateSyncStatus(`正在同步图片 (${i + 1}/${imgPackets.length})...`, true);
-          const p = imgPackets[i];
-          const imgBody = `FITIMG:${encodeURIComponent(p.id)}|${encodeURIComponent(p.name)}|${p.img}`;
-          if (imgBody.length < 3950) {
-            await fetch(`https://ntfy.sh/${topic}`, { method: "POST", body: imgBody });
-          }
-        }
-
+        if (!res.ok) throw new Error();
         appData.lastSync = new Date().toLocaleTimeString();
-        saveState();
-        renderSyncTab();
-        updateSyncStatus("推送成功！云端已保存最新计划", true);
-        showToast("已成功推送到云端！");
-      } catch (err) {
-        updateSyncStatus("网络波动，请重试", false);
-        showToast("上传受阻，请重试");
+        saveState(); renderSyncTab();
+        updateSyncStatus("云端推送成功！", true); showToast("已成功推送到云端！");
+      } catch(e) {
+        updateSyncStatus("推送失败", false); showToast("云端推送失败");
       } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>上传推送到云端</span>';
+        if(btn){ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>上传推送到云端</span>'; }
       }
     }
 
     async function pullFromCloud(silent = false) {
-      const code = document.getElementById("syncPasscodeInput") ? document.getElementById("syncPasscodeInput").value.trim() : (appData.passcode || "chan888");
-      appData.passcode = code;
-
+      const code = appData.passcode || "chan888";
       const btn = document.getElementById("btnPull");
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>拉取中...</span>';
-      }
-      if (!silent) updateSyncStatus("正在从云端拉取...", true);
-
-      const topic = "fit_butler_cn_" + encodeURIComponent(code);
-
+      if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>拉取中...</span>'; }
+      if(!silent) updateSyncStatus("正在从云端拉取...", true);
       try {
-        const res = await fetch(`https://ntfy.sh/${topic}/json?poll=1&since=24h`);
-        if (!res.ok) throw new Error("拉取异常");
-
-        const text = await res.text();
-        const lines = text.trim().split("\n").filter(Boolean);
-
-        let latestMainEncoded = "";
-        const cloudImgMap = {};
-
-        for (let i = 0; i < lines.length; i++) {
+        const res = await fetch(`https://ntfy.sh/fit_butler_cn_${encodeURIComponent(code)}/json?poll=1&since=24h`);
+        if (!res.ok) throw new Error();
+        const lines = (await res.text()).trim().split("\n").filter(Boolean);
+        let b64 = "";
+        for(let i=lines.length-1; i>=0; i--) {
           try {
             const row = JSON.parse(lines[i]);
-            if (!row.message) continue;
-            if (row.message.startsWith("FITMAIN:") || row.message.startsWith("FITSYNC:")) {
-              latestMainEncoded = row.message.split(":")[1];
-            } else if (row.message.startsWith("FITIMG:")) {
-              const raw = row.message.slice(7);
-              const firstPipe = raw.indexOf("|");
-              const secondPipe = raw.indexOf("|", firstPipe + 1);
-              if (firstPipe > -1 && secondPipe > -1) {
-                const exId = decodeURIComponent(raw.slice(0, firstPipe));
-                const exName = decodeURIComponent(raw.slice(firstPipe + 1, secondPipe));
-                const imgData = raw.slice(secondPipe + 1);
-                if (isValidImgSrc(imgData)) {
-                  cloudImgMap[exId] = imgData;
-                  cloudImgMap[exName] = imgData;
-                }
-              }
-            }
-          } catch (e) {}
+            if(row.message && row.message.startsWith("FITMAIN:")) { b64 = row.message.split(":")[1]; break; }
+          }catch(e){}
         }
-
-        if (!latestMainEncoded) {
-          if (!silent) {
-            updateSyncStatus("云端暂无记录", false);
-            showToast("请先在电脑端上传一次");
-          }
-          return;
-        }
-
-        const localImgMap = {};
-        DAY_ORDER.forEach(k => {
-          if (appData.days && appData.days[k]) {
-            appData.days[k].exercises.forEach(e => {
-              if (isValidImgSrc(e.image) && !e.image.startsWith("data:image/svg+xml")) {
-                localImgMap[e.id] = e.image;
-                localImgMap[e.name] = e.image;
-              }
-            });
-          }
-        });
-
-        const remoteData = JSON.parse(base64ToUtf8(latestMainEncoded));
-
-        DAY_ORDER.forEach(k => {
-          if (remoteData.days && remoteData.days[k]) {
-            remoteData.days[k].exercises.forEach(e => {
-              if (cloudImgMap[e.id] || cloudImgMap[e.name]) {
-                e.image = cloudImgMap[e.id] || cloudImgMap[e.name];
-              } else if (e.image === "__SVG__" || PRESET_SVGS[e.name]) {
-                e.image = PRESET_SVGS[e.name] || "";
-              } else if (localImgMap[e.id] || localImgMap[e.name]) {
-                e.image = localImgMap[e.id] || localImgMap[e.name];
-              } else {
-                e.image = "";
-              }
-            });
-          }
-        });
-
-        remoteData.passcode = code;
-        remoteData.lastSync = new Date().toLocaleTimeString();
-
-        appData = sanitizeData(remoteData);
-        saveState();
-        switchTab(currentTab);
-        updateSyncStatus("拉取成功！", true);
-        showToast(silent ? "" : "拉取成功！");
-      } catch (err) {
-        if (!silent) {
-          updateSyncStatus("拉取超时", false);
-          showToast("拉取失败");
-        }
+        if(!b64) throw new Error();
+        appData = sanitizeData(JSON.parse(decodeURIComponent(escape(window.atob(b64)))));
+        saveState(); switchTab(currentTab);
+        updateSyncStatus("拉取并同步成功！", true); showToast(silent ? "已自动同步" : "拉取成功！");
+      } catch(e) {
+        if(!silent) { updateSyncStatus("云端暂无记录", false); showToast("未找到云端记录"); }
       } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i><span>从云端拉取</span>';
-        }
-      }
-    }
-
-    async function copySyncCode() {
-      const codeStr = "FITMAIN:" + utf8ToBase64(JSON.stringify(appData));
-      try {
-        await navigator.clipboard.writeText(codeStr);
-        showToast("同步码已复制到剪贴板");
-      } catch (e) {
-        prompt("请复制同步码：", codeStr);
-      }
-    }
-
-    async function pasteSyncCode() {
-      let raw = "";
-      try {
-        if (navigator.clipboard && navigator.clipboard.readText) {
-          raw = await navigator.clipboard.readText();
-        }
-      } catch (e) {}
-
-      if (!raw || (!raw.includes("FITMAIN:") && !raw.includes("FITSYNC:"))) {
-        raw = prompt("请粘贴同步码：") || "";
-      }
-
-      const tag = raw.includes("FITMAIN:") ? "FITMAIN:" : (raw.includes("FITSYNC:") ? "FITSYNC:" : "");
-      if (!tag) { showToast("无效同步码"); return; }
-
-      try {
-        const b64 = raw.split(tag)[1].trim();
-        appData = sanitizeData(JSON.parse(base64ToUtf8(b64)));
-        saveState();
-        switchTab("train");
-        pushToCloud(); // 导入后立即自动推送到云端
-        showToast("导入成功并已自动同步！");
-      } catch (err) {
-        showToast("同步码损坏");
+        if(btn){ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i><span>从云端拉取</span>'; }
       }
     }
 
     function exportBackupJSON() {
       const blob = new Blob([JSON.stringify(appData, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `健身随身管家备份_${formatDateYMD(new Date())}.json`;
-      a.click();
-      showToast("备份已导出");
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+      a.download = `健身计划备份_${formatDateYMD(new Date())}.json`; a.click();
     }
-
     function importBackupJSON(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+      const file = e.target.files[0]; if (!file) return;
       const reader = new FileReader();
       reader.onload = ev => {
         try {
           appData = sanitizeData(JSON.parse(ev.target.result));
-          saveState(); // 1. 写入本地缓存
-          switchTab("train"); // 2. 刷新界面渲染
-          pushToCloud(); // 3. 立即触发云端推送！
-          showToast("备份导入成功并已自动同步到云端！");
-        } catch(err) {
-          showToast("导入失败，文件格式有误");
-        }
+          saveState(); switchTab("train"); showToast("导入成功并已保存！");
+          pushToCloud();
+        } catch(err) { showToast("文件解析失败"); }
       };
-      reader.readAsText(file);
-      e.target.value = "";
+      reader.readAsText(file); e.target.value = "";
     }
-
     function resetToDefaultData() {
-      if (!confirm("恢复默认计划？")) return;
-      const keep = appData.passcode;
-      appData = getInitialData();
-      appData.passcode = keep;
-      saveState();
-      switchTab("train");
-      showToast("已恢复默认计划");
+      if(!confirm("恢复预置计划？")) return;
+      appData = getInitialData(); saveState(); switchTab("train"); showToast("已恢复预置计划");
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      renderTrainTab();
-      renderSyncTab();
-      if (appData.passcode) pullFromCloud(true);
+      renderTrainTab(); renderSyncTab();
+      if(appData.passcode) pullFromCloud(true);
     });
   </script>
 </body>

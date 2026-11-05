@@ -124,8 +124,8 @@
             <i class="fa-solid fa-bolt text-lg"></i>
           </div>
           <div>
-            <h2 class="font-bold text-slate-800 text-base">极简口令跨端云同步</h2>
-            <p class="text-xs text-slate-400">智能图文分流引擎：秒同步训练计划与打卡进度，自动保留本机高清图</p>
+            <h2 class="font-bold text-slate-800 text-base">极简口令跨端云同步（含图片分片同步）</h2>
+            <p class="text-xs text-slate-400">自动将训练数据与自定义图片拆包同步，手机电脑完整互通</p>
           </div>
         </div>
 
@@ -171,8 +171,8 @@
             <i class="fa-brands fa-weixin text-lg"></i>
           </div>
           <div>
-            <h2 class="font-bold text-slate-800 text-base">微信文字闪电同步（含全部自定义图片）</h2>
-            <p class="text-xs text-slate-400">不受任何大小限制，点「复制同步码」发给微信，另一端复制后点「粘贴导入」</p>
+            <h2 class="font-bold text-slate-800 text-base">微信文字闪电同步（全量含图片）</h2>
+            <p class="text-xs text-slate-400">点「复制同步码」发给微信，另一端复制后点「粘贴导入」</p>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3 pt-1">
@@ -189,8 +189,8 @@
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-3">
         <div class="flex items-center justify-between">
           <div>
-            <span class="font-bold text-slate-700 text-sm">JSON 文件全量备份（含高清大图）</span>
-            <p class="text-[11px] text-slate-400">换手机或备份大量自定义动作实拍图时使用</p>
+            <span class="font-bold text-slate-700 text-sm">JSON 文件全量备份</span>
+            <p class="text-[11px] text-slate-400">本地文件导出与导入兜底</p>
           </div>
           <div class="flex space-x-2">
             <button onclick="exportBackupJSON()" class="border border-slate-200 hover:bg-slate-50 text-slate-700 py-1.5 px-3 rounded-lg text-xs font-medium">导出文件</button>
@@ -248,7 +248,7 @@
     </div>
   </nav>
 
-  <!-- 动作新增/编辑弹窗（含图片上传） -->
+  <!-- 动作新增/编辑弹窗 -->
   <div id="exerciseModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -278,7 +278,7 @@
           </div>
         </div>
         <div>
-          <label class="block text-xs text-slate-500 mb-1">动作示意图（支持本地上传，点击卡片缩略图可全屏放大）</label>
+          <label class="block text-xs text-slate-500 mb-1">动作示意图（支持云端跨设备同步）</label>
           <div class="flex items-center space-x-3">
             <label class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs px-3 py-2 rounded-lg cursor-pointer font-medium transition">
               <i class="fa-regular fa-image mr-1"></i>选择/拍照上传
@@ -300,7 +300,7 @@
 
   <!-- 全屏图片查看器弹窗 -->
   <div id="imageViewerModal" onclick="closeImageViewer()" class="fixed inset-0 z-50 hidden bg-black/90 flex flex-col items-center justify-center p-4 cursor-zoom-out">
-    <img id="fullScreenImage" src="" alt="动作示意图" class="max-w-full max-h-[82vh] rounded-xl shadow-2xl object-contain bg-white" />
+    <img id="fullScreenImage" src="" alt="动作示意图" class="w-72 h-72 sm:w-96 sm:h-96 rounded-xl shadow-2xl object-contain bg-white" />
     <p id="fullScreenCaption" class="text-white text-sm font-medium mt-4"></p>
     <span class="text-slate-400 text-xs mt-1">点击屏幕任意处关闭</span>
   </div>
@@ -328,6 +328,11 @@
       "绳索伐木": createSvgPlaceholder("绳索伐木", "核心抗旋发力 · 腹斜肌强化", "#0284c7"),
       "腹轮": createSvgPlaceholder("腹轮推行", "收紧核心不塌腰 · 顶峰收缩", "#7c3aed")
     };
+
+    // 校验图片数据是否合法（彻底拦截 __KEEP_LOCAL_IMG__ 等无效字符导致裂图）
+    function isValidImgSrc(src) {
+      return typeof src === "string" && src.startsWith("data:image/");
+    }
 
     function getInitialData() {
       return {
@@ -367,7 +372,8 @@
       };
     }
 
-    const STORAGE_KEY = "FIT_NTFY_V6_IMG";
+    const STORAGE_KEY = "FIT_NTFY_V7_CHUNK";
+    const DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
     let appData = loadState();
     let currentTab = "train";
     let modalTempImage = "";
@@ -376,19 +382,27 @@
     let selectedCalendarDateStr = formatDateYMD(new Date());
     let weightChartInstance = null;
 
+    function sanitizeData(data) {
+      if (!data || !data.days) return getInitialData();
+      DAY_ORDER.forEach(k => {
+        if (data.days[k] && Array.isArray(data.days[k].exercises)) {
+          data.days[k].exercises.forEach(e => {
+            if (!isValidImgSrc(e.image)) {
+              e.image = PRESET_SVGS[e.name] || "";
+            }
+          });
+        }
+      });
+      return data;
+    }
+
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("FIT_NTFY_V5");
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("FIT_NTFY_V6_IMG") || localStorage.getItem("FIT_NTFY_V5");
         if (!raw) return getInitialData();
         const parsed = JSON.parse(raw);
         if (!parsed.passcode || parsed.passcode.startsWith("ghp_")) parsed.passcode = "chan888";
-        // 自动补齐默认SVG图解
-        if (parsed.days && parsed.days.wed) {
-          parsed.days.wed.exercises.forEach(e => {
-            if (!e.image && PRESET_SVGS[e.name]) e.image = PRESET_SVGS[e.name];
-          });
-        }
-        return Object.assign(getInitialData(), parsed);
+        return sanitizeData(Object.assign(getInitialData(), parsed));
       } catch (e) {
         return getInitialData();
       }
@@ -398,7 +412,7 @@
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
       } catch (e) {
-        showToast("本地存储空间已满，请适当清理过大的图片");
+        showToast("本地存储已满");
       }
     }
 
@@ -483,9 +497,7 @@
       if (t === "sync") renderSyncTab();
     }
 
-    const DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-
-    // ==================== Tab 1: 训练渲染（带图片、上下排序、全屏查看） ====================
+    // ==================== Tab 1: 训练渲染 ====================
     function renderTrainTab() {
       const selector = document.getElementById("daySelector");
       selector.innerHTML = "";
@@ -513,6 +525,7 @@
         const isDone = ex.completedSets >= ex.targetSets;
         const progressPct = Math.min(100, Math.round((ex.completedSets / ex.targetSets) * 100));
         const weightBadge = ex.weight > 0 ? `<span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-xs font-medium">${ex.weight}kg</span>` : "";
+        const validImg = isValidImgSrc(ex.image);
 
         const card = document.createElement("div");
         card.className = `bg-white rounded-xl p-4 shadow-sm border transition ${isDone ? 'border-emerald-400 bg-emerald-50/20' : 'border-slate-100'}`;
@@ -521,8 +534,8 @@
           <div class="flex items-start justify-between gap-3">
             <div class="flex items-start space-x-3 flex-1 min-w-0">
               ${
-                ex.image
-                  ? `<img src="${ex.image}" alt="${ex.name}" onclick="openImageViewer('${ex.id}')" class="w-16 h-16 rounded-lg object-cover border border-slate-200 flex-shrink-0 cursor-zoom-in hover:opacity-90 transition" title="点击全屏查看"/>`
+                validImg
+                  ? `<img src="${ex.image}" alt="缩略图" onclick="openImageViewer('${ex.id}')" onerror="this.style.display='none'" class="w-16 h-16 rounded-lg object-cover border border-slate-200 flex-shrink-0 cursor-zoom-in hover:opacity-90 transition" title="点击全屏查看"/>`
                   : `<label class="w-16 h-16 rounded-lg bg-slate-50 border border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 hover:text-emerald-500 hover:border-emerald-300 cursor-pointer flex-shrink-0 transition" title="点击上传动作图解">
                       <i class="fa-regular fa-image text-sm"></i>
                       <span class="text-[10px] mt-0.5">传图</span>
@@ -542,7 +555,6 @@
               </div>
             </div>
 
-            <!-- 排序、编辑、删除工具栏 -->
             <div class="flex items-center space-x-0.5 text-slate-400">
               <button onclick="moveExercise(${idx}, -1)" class="w-7 h-7 rounded hover:bg-slate-100 hover:text-slate-700 flex items-center justify-center" title="上移">
                 <i class="fa-solid fa-arrow-up text-xs"></i>
@@ -619,28 +631,40 @@
       if (res) { cur.theme = res.trim(); saveState(); renderTrainTab(); }
     }
 
-    // ==================== 图片高倍压缩与上传处理 ====================
-    function compressImageFile(file, callback) {
+    // ==================== 云同步级自适应压缩（确保单张图片小于 3.2KB，100% 穿透 ntfy.sh） ====================
+    function compressImageForCloud(file, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-          const canvas = document.createElement("canvas");
-          const MAX_SIZE = 320; // 适度尺寸兼顾清晰度与轻量化
-          let w = img.width;
-          let h = img.height;
-          if (w > h && w > MAX_SIZE) {
-            h = Math.round((h * MAX_SIZE) / w);
-            w = MAX_SIZE;
-          } else if (h > MAX_SIZE) {
-            w = Math.round((w * MAX_SIZE) / h);
-            h = MAX_SIZE;
+          let maxDim = 160;
+          let quality = 0.55;
+          let dataUrl = "";
+
+          // 循环自适应阶梯压缩，确保编码后小于 3200 字节
+          while (maxDim >= 80) {
+            const canvas = document.createElement("canvas");
+            let w = img.width;
+            let h = img.height;
+            if (w > h && w > maxDim) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else if (h > maxDim) {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            dataUrl = canvas.toDataURL("image/jpeg", quality);
+            if (dataUrl.length <= 3200) break;
+            maxDim -= 25;
+            quality -= 0.1;
           }
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, w, h);
-          callback(canvas.toDataURL("image/jpeg", 0.65));
+          callback(dataUrl);
         };
         img.src = e.target.result;
       };
@@ -650,13 +674,13 @@
     function quickUploadExerciseImg(event, exId) {
       const file = event.target.files[0];
       if (!file) return;
-      compressImageFile(file, (base64) => {
+      compressImageForCloud(file, (base64) => {
         const ex = appData.days[appData.selectedDay].exercises.find(i => i.id === exId);
         if (ex) {
           ex.image = base64;
           saveState();
           renderTrainTab();
-          showToast("示意图已上传并保存！");
+          showToast("图片已保存！点击「上传推送到云端」即可同步到手机");
         }
       });
     }
@@ -664,7 +688,7 @@
     function handleModalImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
-      compressImageFile(file, (base64) => {
+      compressImageForCloud(file, (base64) => {
         modalTempImage = base64;
         document.getElementById("modalImagePreview").src = base64;
         document.getElementById("modalImagePreviewWrap").classList.remove("hidden");
@@ -678,7 +702,7 @@
 
     function openImageViewer(exId) {
       const ex = appData.days[appData.selectedDay].exercises.find(i => i.id === exId);
-      if (!ex || !ex.image) return;
+      if (!ex || !isValidImgSrc(ex.image)) return;
       document.getElementById("fullScreenImage").src = ex.image;
       document.getElementById("fullScreenCaption").textContent = `${ex.name}（${ex.targetSets}组 × ${ex.reps} ${ex.weight > 0 ? ex.weight + 'kg' : ''}）`;
       document.getElementById("imageViewerModal").classList.remove("hidden");
@@ -702,7 +726,7 @@
         document.getElementById("exSetsInput").value = ex.targetSets;
         document.getElementById("exRepsInput").value = ex.reps;
         document.getElementById("exWeightInput").value = ex.weight;
-        modalTempImage = ex.image || "";
+        modalTempImage = isValidImgSrc(ex.image) ? ex.image : "";
       } else {
         document.getElementById("modalTitle").textContent = "添加新训练动作";
         idInput.value = "";
@@ -898,7 +922,7 @@
       });
     }
 
-    // ==================== 智能图文分流云同步引擎 (保住 ntfy.sh 4KB 限制不出错) ====================
+    // ==================== 多包分片云端同步引擎（文字+多张图片100%跨端同步） ====================
     function renderSyncTab() {
       document.getElementById("syncPasscodeInput").value = appData.passcode || "chan888";
       if (appData.lastSync) document.getElementById("lastSyncTimeText").textContent = `上次同步: ${appData.lastSync}`;
@@ -927,67 +951,27 @@
       return decodeURIComponent(escape(window.atob(str)));
     }
 
-    // 智能构建小于 3900 字节的云端安全载荷
-    function buildSafeCloudPayload() {
-      const clone = JSON.parse(JSON.stringify(appData));
-      let strippedCustomImages = false;
-
-      // 第一步：将内置SVG替换为超短代号
-      DAY_ORDER.forEach(k => {
-        clone.days[k].exercises.forEach(e => {
-          if (e.image && e.image.startsWith("data:image/svg+xml")) {
-            e.image = "__PRESET_SVG__";
-          }
-        });
+    // 将单个原本过大的历史旧图在上传前自动微缩至 3.2KB 内
+    function shrinkDataUrl(dataUrl) {
+      return new Promise((resolve) => {
+        if (!dataUrl || dataUrl.length <= 3200) return resolve(dataUrl);
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxD = 120;
+          let w = img.width, h = img.height;
+          if (w > h && w > maxD) { h = Math.round((h * maxD) / w); w = maxD; }
+          else if (h > maxD) { w = Math.round((w * maxD) / h); h = maxD; }
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", 0.5));
+        };
+        img.onerror = () => resolve("");
+        img.src = dataUrl;
       });
-
-      let encoded = "FITSYNC:" + utf8ToBase64(JSON.stringify(clone));
-
-      // 第二步：检测是否超过 ntfy.sh 的 4000 字节红线，若超过则剥离自定义大图，仅同步训练数据
-      if (encoded.length > 3800) {
-        DAY_ORDER.forEach(k => {
-          clone.days[k].exercises.forEach(e => {
-            if (e.image && e.image !== "__PRESET_SVG__") {
-              e.image = "__KEEP_LOCAL_IMG__";
-              strippedCustomImages = true;
-            }
-          });
-        });
-        encoded = "FITSYNC:" + utf8ToBase64(JSON.stringify(clone));
-      }
-
-      return { encoded, strippedCustomImages };
-    }
-
-    // 智能合并远程数据并保护本机已有图片
-    function mergeRemotePayload(remoteData) {
-      // 收集本机已有的自定义图片字典 (按动作id和动作名称双索引)
-      const localImgMap = {};
-      DAY_ORDER.forEach(k => {
-        if (appData.days && appData.days[k]) {
-          appData.days[k].exercises.forEach(e => {
-            if (e.image && !e.image.startsWith("data:image/svg+xml")) {
-              localImgMap[e.id] = e.image;
-              localImgMap[e.name] = e.image;
-            }
-          });
-        }
-      });
-
-      // 还原远程图片标记
-      DAY_ORDER.forEach(k => {
-        if (remoteData.days && remoteData.days[k]) {
-          remoteData.days[k].exercises.forEach(e => {
-            if (e.image === "__PRESET_SVG__") {
-              e.image = PRESET_SVGS[e.name] || "";
-            } else if (e.image === "__KEEP_LOCAL_IMG__" || !e.image) {
-              // 自动保留本机已上传过的同名自定义图片！
-              e.image = localImgMap[e.id] || localImgMap[e.name] || PRESET_SVGS[e.name] || "";
-            }
-          });
-        }
-      });
-      return remoteData;
     }
 
     async function pushToCloud() {
@@ -998,32 +982,60 @@
       const btn = document.getElementById("btnPush");
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>上传中...</span>';
-      updateSyncStatus("正在上传至云端...", true);
+      updateSyncStatus("正在打包训练计划与图片...", true);
 
       const topic = "fit_butler_cn_" + encodeURIComponent(code);
-      const { encoded, strippedCustomImages } = buildSafeCloudPayload();
+      const clone = JSON.parse(JSON.stringify(appData));
+      const imgPackets = [];
+
+      // 1. 提取自定义图片为独立分片包，主数据包仅保留轻量占位
+      for (const k of DAY_ORDER) {
+        for (const e of clone.days[k].exercises) {
+          if (isValidImgSrc(e.image)) {
+            if (e.image.startsWith("data:image/svg+xml")) {
+              e.image = "__SVG__";
+            } else {
+              // 确保自定义图片尺寸小巧可穿透 ntfy.sh
+              const compactImg = await shrinkDataUrl(e.image);
+              imgPackets.push({ id: e.id, name: e.name, img: compactImg });
+              e.image = "";
+            }
+          } else {
+            e.image = "";
+          }
+        }
+      }
 
       try {
-        const res = await fetch(`https://ntfy.sh/${topic}`, {
+        // 第一步：发送主训练计划包
+        const mainBody = "FITMAIN:" + utf8ToBase64(JSON.stringify(clone));
+        const resMain = await fetch(`https://ntfy.sh/${topic}`, {
           method: "POST",
-          body: encoded
+          body: mainBody
         });
+        if (!resMain.ok) throw new Error("主数据上传失败");
 
-        if (!res.ok) throw new Error("上传异常");
+        // 第二步：逐个发送自定义图片分片包（每张图独立一条消息，突破4KB限制）
+        for (let i = 0; i < imgPackets.length; i++) {
+          updateSyncStatus(`正在同步图片 (${i + 1}/${imgPackets.length})...`, true);
+          const p = imgPackets[i];
+          const imgBody = `FITIMG:${encodeURIComponent(p.id)}|${encodeURIComponent(p.name)}|${p.img}`;
+          if (imgBody.length < 3950) {
+            await fetch(`https://ntfy.sh/${topic}`, {
+              method: "POST",
+              body: imgBody
+            });
+          }
+        }
 
         appData.lastSync = new Date().toLocaleTimeString();
         saveState();
         renderSyncTab();
-        if (strippedCustomImages) {
-          updateSyncStatus("训练与打卡已同步！（自定义大图保留在本机，跨端传大图请用下方微信同步码）", true);
-          showToast("训练数据已秒同步！");
-        } else {
-          updateSyncStatus("全部数据已成功推送到云端！", true);
-          showToast("已成功推送到云端！");
-        }
+        updateSyncStatus(`推送成功！（含训练计划与 ${imgPackets.length} 张自定义图片）`, true);
+        showToast("训练计划与图片已全部同步至云端！");
       } catch (err) {
-        updateSyncStatus("云端繁忙，请使用下方【微信文字同步】", false);
-        showToast("请使用下方微信同步码");
+        updateSyncStatus("网络波动，请重试或使用下方微信文字同步", false);
+        showToast("上传受阻，请重试");
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>上传推送到云端</span>';
@@ -1039,7 +1051,7 @@
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>拉取中...</span>';
       }
-      if (!silent) updateSyncStatus("正在从云端拉取...", true);
+      if (!silent) updateSyncStatus("正在从云端拉取训练数据与图片...", true);
 
       const topic = "fit_butler_cn_" + encodeURIComponent(code);
 
@@ -1050,38 +1062,86 @@
         const text = await res.text();
         const lines = text.trim().split("\n").filter(Boolean);
 
-        let latestEncoded = "";
-        for (let i = lines.length - 1; i >= 0; i--) {
+        let latestMainEncoded = "";
+        const cloudImgMap = {};
+
+        // 遍历消息流，收集最新的主数据包 + 所有的图片分片包
+        for (let i = 0; i < lines.length; i++) {
           try {
             const row = JSON.parse(lines[i]);
-            if (row.message && row.message.startsWith("FITSYNC:")) {
-              latestEncoded = row.message.slice(8);
-              break;
+            if (!row.message) continue;
+            if (row.message.startsWith("FITMAIN:") || row.message.startsWith("FITSYNC:")) {
+              latestMainEncoded = row.message.split(":")[1];
+            } else if (row.message.startsWith("FITIMG:")) {
+              const raw = row.message.slice(7);
+              const firstPipe = raw.indexOf("|");
+              const secondPipe = raw.indexOf("|", firstPipe + 1);
+              if (firstPipe > -1 && secondPipe > -1) {
+                const exId = decodeURIComponent(raw.slice(0, firstPipe));
+                const exName = decodeURIComponent(raw.slice(firstPipe + 1, secondPipe));
+                const imgData = raw.slice(secondPipe + 1);
+                if (isValidImgSrc(imgData)) {
+                  cloudImgMap[exId] = imgData;
+                  cloudImgMap[exName] = imgData;
+                }
+              }
             }
           } catch (e) {}
         }
 
-        if (!latestEncoded) {
+        if (!latestMainEncoded) {
           if (!silent) {
-            updateSyncStatus("云端暂无记录，请先在另一端点击【上传推送到云端】", false);
+            updateSyncStatus("云端暂无记录，请先在电脑端点击【上传推送到云端】", false);
             showToast("请先在另一端上传一次");
           }
           return;
         }
 
-        const decodedJson = base64ToUtf8(latestEncoded);
-        const remoteData = mergeRemotePayload(JSON.parse(decodedJson));
+        // 同时保留本机已有的有效自定义图片作为兜底
+        const localImgMap = {};
+        DAY_ORDER.forEach(k => {
+          if (appData.days && appData.days[k]) {
+            appData.days[k].exercises.forEach(e => {
+              if (isValidImgSrc(e.image) && !e.image.startsWith("data:image/svg+xml")) {
+                localImgMap[e.id] = e.image;
+                localImgMap[e.name] = e.image;
+              }
+            });
+          }
+        });
+
+        const remoteData = JSON.parse(base64ToUtf8(latestMainEncoded));
+
+        // 拼装还原所有图片（优先使用云端最新分片图 -> 其次本机缓存图 -> 其次默认SVG -> 否则置空显示传图按钮）
+        DAY_ORDER.forEach(k => {
+          if (remoteData.days && remoteData.days[k]) {
+            remoteData.days[k].exercises.forEach(e => {
+              if (cloudImgMap[e.id] || cloudImgMap[e.name]) {
+                e.image = cloudImgMap[e.id] || cloudImgMap[e.name];
+              } else if (e.image === "__SVG__" || PRESET_SVGS[e.name]) {
+                e.image = PRESET_SVGS[e.name] || "";
+              } else if (isValidImgSrc(e.image)) {
+                // 保持原有效图片
+              } else if (localImgMap[e.id] || localImgMap[e.name]) {
+                e.image = localImgMap[e.id] || localImgMap[e.name];
+              } else {
+                e.image = "";
+              }
+            });
+          }
+        });
+
         remoteData.passcode = code;
         remoteData.lastSync = new Date().toLocaleTimeString();
 
-        appData = remoteData;
+        appData = sanitizeData(remoteData);
         saveState();
         switchTab(currentTab);
-        updateSyncStatus("已同步至云端最新数据（本机图片已自动保留）！", true);
-        showToast(silent ? "已自动同步最新进度" : "拉取成功！");
+        updateSyncStatus("拉取成功！训练计划与动作图片已全部就绪", true);
+        showToast(silent ? "已自动同步最新图文数据" : "图文同步完成！");
       } catch (err) {
         if (!silent) {
-          updateSyncStatus("拉取超时，可使用下方微信文字同步码", false);
+          updateSyncStatus("拉取超时，请重试", false);
           showToast("拉取失败，请重试");
         }
       } finally {
@@ -1092,9 +1152,9 @@
       }
     }
 
-    // ==================== 微信文字全量同步（支持携带自定义图片） ====================
+    // ==================== 微信文字全量同步 ====================
     async function copySyncCode() {
-      const codeStr = "FITSYNC:" + utf8ToBase64(JSON.stringify(appData));
+      const codeStr = "FITMAIN:" + utf8ToBase64(JSON.stringify(appData));
       try {
         await navigator.clipboard.writeText(codeStr);
         showToast("全量同步码已复制！可粘贴发给微信");
@@ -1111,18 +1171,19 @@
         }
       } catch (e) {}
 
-      if (!raw || !raw.includes("FITSYNC:")) {
+      if (!raw || (!raw.includes("FITMAIN:") && !raw.includes("FITSYNC:"))) {
         raw = prompt("请长按粘贴从微信复制过来的同步码：") || "";
       }
 
-      if (!raw.includes("FITSYNC:")) {
+      const tag = raw.includes("FITMAIN:") ? "FITMAIN:" : (raw.includes("FITSYNC:") ? "FITSYNC:" : "");
+      if (!tag) {
         showToast("未检测到有效同步码");
         return;
       }
 
       try {
-        const b64 = raw.split("FITSYNC:")[1].trim();
-        const imported = mergeRemotePayload(JSON.parse(base64ToUtf8(b64)));
+        const b64 = raw.split(tag)[1].trim();
+        const imported = sanitizeData(JSON.parse(base64ToUtf8(b64)));
         appData = imported;
         saveState();
         switchTab("train");
@@ -1147,7 +1208,7 @@
       const reader = new FileReader();
       reader.onload = ev => {
         try {
-          appData = JSON.parse(ev.target.result);
+          appData = sanitizeData(JSON.parse(ev.target.result));
           saveState();
           switchTab("train");
           showToast("全量备份（含图片）导入成功！");

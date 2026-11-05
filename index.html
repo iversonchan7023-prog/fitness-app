@@ -3,31 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>健身随身管家 - 极简云同步版</title>
-  <!-- Tailwind CSS CDN -->
+  <title>健身随身管家 - GitHub原生云同步</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome CDN (国内畅连 BootCDN 镜像) -->
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- Chart.js CDN (国内畅连 BootCDN 镜像) -->
   <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
       background-color: #f8fafc;
     }
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="text-slate-800 pb-24 select-none">
 
-  <!-- 顶部常驻栏 & 总计时器 -->
+  <!-- 顶部常驻栏 -->
   <header class="sticky top-0 z-30 bg-slate-900 text-white shadow-md">
     <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-2">
@@ -35,29 +27,24 @@
         <span class="font-bold text-lg tracking-wide">健身随身管家</span>
         <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-slate-500" title="云端状态"></span>
       </div>
-      <!-- 训练总计时器 -->
       <div class="flex items-center bg-slate-800 rounded-full px-3 py-1 space-x-2 border border-slate-700">
         <i class="fa-regular fa-clock text-emerald-400 text-xs"></i>
         <span id="workoutTimerDisplay" class="font-mono font-semibold text-sm w-16 text-center">00:00:00</span>
         <button onclick="toggleWorkoutTimer()" id="workoutTimerBtn" class="text-xs bg-emerald-500 hover:bg-emerald-600 text-white w-6 h-6 rounded-full flex items-center justify-center transition">
           <i class="fa-solid fa-play"></i>
         </button>
-        <button onclick="resetWorkoutTimer()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 w-6 h-6 rounded-full flex items-center justify-center transition" title="重置计时">
+        <button onclick="resetWorkoutTimer()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 w-6 h-6 rounded-full flex items-center justify-center transition">
           <i class="fa-solid fa-rotate-right"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- 主内容容器 -->
   <main class="max-w-xl mx-auto px-4 pt-4">
 
-    <!-- ==================== Tab 1: 训练 ==================== -->
+    <!-- Tab 1: 训练 -->
     <section id="tab-train" class="tab-content space-y-4">
-      <!-- 星期切换栏 -->
       <div id="daySelector" class="flex space-x-2 overflow-x-auto no-scrollbar pb-1"></div>
-
-      <!-- 当日标题与新增按钮 -->
       <div class="flex items-center justify-between bg-white p-3.5 rounded-xl shadow-sm border border-slate-100">
         <div class="flex items-center space-x-2">
           <span id="currentDayLabel" class="font-bold text-slate-800 text-base">周三 · 有氧日</span>
@@ -70,11 +57,7 @@
           <span>添加动作</span>
         </button>
       </div>
-
-      <!-- 动作卡片列表 -->
       <div id="exerciseList" class="space-y-3"></div>
-
-      <!-- 底部完成今日训练按钮 -->
       <div class="pt-2">
         <button onclick="finishTodayWorkout()" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold py-3.5 rounded-xl shadow-md flex items-center justify-center space-x-2 transition">
           <i class="fa-solid fa-flag-checkered text-emerald-400"></i>
@@ -83,14 +66,14 @@
       </div>
     </section>
 
-    <!-- ==================== Tab 2: 日历 ==================== -->
+    <!-- Tab 2: 日历 -->
     <section id="tab-calendar" class="tab-content hidden space-y-4">
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
         <div class="flex items-center justify-between mb-4">
           <button onclick="changeCalendarMonth(-1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600">
             <i class="fa-solid fa-chevron-left"></i>
           </button>
-          <h2 id="calendarMonthTitle" class="font-bold text-base text-slate-800">2026年 11月</h2>
+          <h2 id="calendarMonthTitle" class="font-bold text-base text-slate-800">日历</h2>
           <button onclick="changeCalendarMonth(1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600">
             <i class="fa-solid fa-chevron-right"></i>
           </button>
@@ -103,317 +86,242 @@
       <div id="calendarDayDetail" class="space-y-3"></div>
     </section>
 
-    <!-- ==================== Tab 3: 历史 ==================== -->
+    <!-- Tab 3: 历史 -->
     <section id="tab-history" class="tab-content hidden space-y-4">
       <div class="flex items-center justify-between bg-white p-3.5 rounded-xl shadow-sm border border-slate-100">
         <div>
-          <h2 class="font-bold text-slate-800 text-base">历史打卡记录</h2>
-          <p class="text-xs text-slate-400" id="historyCountText">共 0 条训练归档</p>
+          <h2 class="font-bold text-slate-800 text-base">历史记录</h2>
+          <p class="text-xs text-slate-400" id="historyCountText">共 0 条</p>
         </div>
-        <button onclick="clearAllHistory()" class="text-xs text-rose-500 hover:bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-lg transition">
-          <i class="fa-solid fa-trash-can mr-1"></i>全部清空
-        </button>
+        <button onclick="clearAllHistory()" class="text-xs text-rose-500 hover:bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-lg">清空</button>
       </div>
       <div id="historyList" class="space-y-3"></div>
     </section>
 
-    <!-- ==================== Tab 4: 统计 ==================== -->
+    <!-- Tab 4: 统计 -->
     <section id="tab-stats" class="tab-content hidden space-y-4">
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-4">
         <div class="flex items-center justify-between">
-          <h2 class="font-bold text-slate-800 text-base">动作重量演变趋势</h2>
-          <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-medium">单位: kg</span>
+          <h2 class="font-bold text-slate-800 text-base">配重趋势</h2>
+          <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-medium">kg</span>
         </div>
         <div>
-          <label class="block text-xs text-slate-500 mb-1">选择要分析的动作：</label>
-          <select id="statsExerciseSelect" onchange="renderStatsChart()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500"></select>
+          <select id="statsExerciseSelect" onchange="renderStatsChart()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm"></select>
         </div>
         <div class="relative h-64 w-full">
           <canvas id="weightChart"></canvas>
         </div>
-        <p id="statsEmptyTip" class="text-xs text-center text-slate-400 hidden">该动作暂无历史打卡数据，完成训练归档后即可生成趋势曲线。</p>
+        <p id="statsEmptyTip" class="text-xs text-center text-slate-400 hidden">暂无历史打卡数据</p>
       </div>
     </section>
 
-    <!-- ==================== Tab 5: 同步 ==================== -->
+    <!-- Tab 5: 同步 (基于 GitHub API，国内直连稳妥) -->
     <section id="tab-sync" class="tab-content hidden space-y-4">
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-4">
         <div class="flex items-center space-x-2">
           <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
-            <i class="fa-solid fa-bolt"></i>
+            <i class="fa-brands fa-github text-lg"></i>
           </div>
           <div>
-            <h2 class="font-bold text-slate-800 text-base">国内网络直连同步</h2>
-            <p class="text-xs text-slate-400">输入相同口令，手机与电脑即刻双向互通</p>
+            <h2 class="font-bold text-slate-800 text-base">GitHub 原生私有云同步</h2>
+            <p class="text-xs text-slate-400">数据保存在自己仓库的 data.json 中，国内直连稳定</p>
           </div>
         </div>
 
         <div class="space-y-3 pt-1">
           <div>
-            <label class="block text-xs font-medium text-slate-600 mb-1">设置您的独享口令（建议包含字母+数字，例如: myfit888）</label>
-            <div class="flex space-x-2">
-              <input type="text" id="syncPasscodeInput" placeholder="输入自定义口令..." class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" />
-              <button onclick="savePasscode()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-lg font-medium transition">保存口令</button>
+            <label class="block text-xs font-medium text-slate-600 mb-1">GitHub Personal Token (密钥)</label>
+            <input type="password" id="ghTokenInput" placeholder="粘贴 ghp_ 开头的密钥..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-emerald-500" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">GitHub 用户名</label>
+              <input type="text" id="ghOwnerInput" value="iversonchan7023-prog" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">仓库名</label>
+              <input type="text" id="ghRepoInput" value="健身应用" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-500" />
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3 pt-1">
-            <button onclick="pushToCloud()" id="btnPushCloud" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-3 rounded-xl shadow-sm flex items-center justify-center space-x-1.5 text-sm transition">
+          <button onclick="saveGitHubConfig()" class="w-full bg-slate-800 hover:bg-slate-700 text-white text-xs py-2 rounded-lg font-medium transition">
+            保存配置信息
+          </button>
+
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <button onclick="pushToGitHub()" id="btnPush" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-3 rounded-xl shadow-sm flex items-center justify-center space-x-1.5 text-sm transition">
               <i class="fa-solid fa-cloud-arrow-up"></i>
               <span>上传推送到云端</span>
             </button>
-            <button onclick="pullFromCloud(false)" id="btnPullCloud" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-3 rounded-xl shadow-sm flex items-center justify-center space-x-1.5 text-sm transition">
+            <button onclick="pullFromGitHub(false)" id="btnPull" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-3 rounded-xl shadow-sm flex items-center justify-center space-x-1.5 text-sm transition">
               <i class="fa-solid fa-cloud-arrow-down"></i>
               <span>从云端拉取</span>
             </button>
           </div>
 
           <div id="syncStatusBox" class="text-xs bg-slate-50 text-slate-500 p-2.5 rounded-lg border border-slate-100 flex items-center justify-between">
-            <span id="syncStatusText">状态：等待同步操作</span>
+            <span id="syncStatusText">状态：等待配置与同步</span>
             <span id="lastSyncTimeText" class="text-[11px] text-slate-400"></span>
           </div>
         </div>
       </div>
 
-      <!-- 离线 JSON 备份兜底 -->
+      <!-- 微信文件备份兜底 -->
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-3">
         <div class="flex items-center space-x-2">
           <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
             <i class="fa-solid fa-file-shield"></i>
           </div>
           <div>
-            <h2 class="font-bold text-slate-800 text-base">微信/本地文件直传（终极保障）</h2>
-            <p class="text-xs text-slate-400">导出文件通过微信发送给手机，导入即同步</p>
+            <h2 class="font-bold text-slate-800 text-base">本地离线文件备份</h2>
+            <p class="text-xs text-slate-400">微信发给手机直接导入</p>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3 pt-1">
-          <button onclick="exportBackupJSON()" class="border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-2.5 px-3 rounded-xl flex items-center justify-center space-x-1.5 text-sm transition">
-            <i class="fa-solid fa-download text-slate-500"></i>
-            <span>导出 JSON 备份</span>
+          <button onclick="exportBackupJSON()" class="border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-1">
+            <i class="fa-solid fa-download"></i><span>导出备份</span>
           </button>
-          <label class="border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-2.5 px-3 rounded-xl flex items-center justify-center space-x-1.5 text-sm cursor-pointer transition">
-            <i class="fa-solid fa-upload text-slate-500"></i>
-            <span>导入 JSON 备份</span>
+          <label class="border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-1 cursor-pointer">
+            <i class="fa-solid fa-upload"></i><span>导入备份</span>
             <input type="file" id="importJsonInput" accept=".json" class="hidden" onchange="importBackupJSON(event)" />
           </label>
-        </div>
-        <div class="pt-2 border-t border-slate-100 flex justify-end">
-          <button onclick="resetToDefaultData()" class="text-xs text-slate-400 hover:text-rose-500 transition">恢复预设训练计划</button>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- 组间休息倒计时悬浮窗 -->
+  <!-- 休息倒计时 -->
   <div id="restFloatingModal" class="fixed bottom-20 right-4 z-40 hidden bg-slate-900/95 backdrop-blur text-white p-3.5 rounded-2xl shadow-xl border border-slate-700 w-64">
     <div class="flex items-center justify-between mb-2">
-      <span class="text-xs text-slate-300 flex items-center">
-        <i class="fa-solid fa-mug-hot text-emerald-400 mr-1.5"></i>组间休息倒计时
-      </span>
-      <button onclick="startRestTimer(60)" class="text-[11px] text-slate-400 hover:text-white">重置60s</button>
+      <span class="text-xs text-slate-300"><i class="fa-solid fa-mug-hot text-emerald-400 mr-1"></i>休息倒计时</span>
+      <button onclick="startRestTimer(60)" class="text-[11px] text-slate-400 hover:text-white">60s</button>
     </div>
     <div class="flex items-center justify-between">
       <span id="restTimerDisplay" class="font-mono font-bold text-2xl text-emerald-400">01:00</span>
       <div class="flex space-x-1.5">
-        <button onclick="addRestTime(15)" class="bg-slate-700 hover:bg-slate-600 text-xs px-2.5 py-1.5 rounded-lg font-medium transition">+15s</button>
-        <button onclick="skipRestTimer()" class="bg-rose-500 hover:bg-rose-600 text-xs px-2.5 py-1.5 rounded-lg font-medium transition">跳过</button>
+        <button onclick="addRestTime(15)" class="bg-slate-700 hover:bg-slate-600 text-xs px-2.5 py-1.5 rounded-lg">+15s</button>
+        <button onclick="skipRestTimer()" class="bg-rose-500 hover:bg-rose-600 text-xs px-2.5 py-1.5 rounded-lg">跳过</button>
       </div>
     </div>
   </div>
 
-  <button onclick="startRestTimer(60)" title="开启60秒组间休息" class="fixed bottom-20 left-4 z-30 bg-white border border-slate-200 text-slate-700 shadow-md rounded-full px-3 py-2 text-xs font-medium flex items-center space-x-1 hover:border-emerald-400 transition">
-    <i class="fa-solid fa-hourglass-half text-emerald-500"></i>
-    <span>休息计时</span>
+  <button onclick="startRestTimer(60)" class="fixed bottom-20 left-4 z-30 bg-white border border-slate-200 text-slate-700 shadow-md rounded-full px-3 py-2 text-xs font-medium flex items-center space-x-1">
+    <i class="fa-solid fa-hourglass-half text-emerald-500"></i><span>休息计时</span>
   </button>
 
-  <!-- 底部常驻 5 个 Tab 导航栏 -->
+  <!-- 底部导航 -->
   <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-200 shadow-lg">
     <div class="max-w-xl mx-auto grid grid-cols-5 h-16">
       <button onclick="switchTab('train')" id="nav-train" class="nav-btn flex flex-col items-center justify-center text-emerald-600">
-        <i class="fa-solid fa-dumbbell text-lg mb-0.5"></i>
-        <span class="text-[11px] font-medium">训练</span>
+        <i class="fa-solid fa-dumbbell text-lg mb-0.5"></i><span class="text-[11px] font-medium">训练</span>
       </button>
-      <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn flex flex-col items-center justify-center text-slate-400 hover:text-slate-600">
-        <i class="fa-regular fa-calendar-check text-lg mb-0.5"></i>
-        <span class="text-[11px] font-medium">日历</span>
+      <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn flex flex-col items-center justify-center text-slate-400">
+        <i class="fa-regular fa-calendar-check text-lg mb-0.5"></i><span class="text-[11px] font-medium">日历</span>
       </button>
-      <button onclick="switchTab('history')" id="nav-history" class="nav-btn flex flex-col items-center justify-center text-slate-400 hover:text-slate-600">
-        <i class="fa-solid fa-clock-rotate-left text-lg mb-0.5"></i>
-        <span class="text-[11px] font-medium">历史</span>
+      <button onclick="switchTab('history')" id="nav-history" class="nav-btn flex flex-col items-center justify-center text-slate-400">
+        <i class="fa-solid fa-clock-rotate-left text-lg mb-0.5"></i><span class="text-[11px] font-medium">历史</span>
       </button>
-      <button onclick="switchTab('stats')" id="nav-stats" class="nav-btn flex flex-col items-center justify-center text-slate-400 hover:text-slate-600">
-        <i class="fa-solid fa-chart-line text-lg mb-0.5"></i>
-        <span class="text-[11px] font-medium">统计</span>
+      <button onclick="switchTab('stats')" id="nav-stats" class="nav-btn flex flex-col items-center justify-center text-slate-400">
+        <i class="fa-solid fa-chart-line text-lg mb-0.5"></i><span class="text-[11px] font-medium">统计</span>
       </button>
-      <button onclick="switchTab('sync')" id="nav-sync" class="nav-btn flex flex-col items-center justify-center text-slate-400 hover:text-slate-600">
-        <i class="fa-solid fa-cloud text-lg mb-0.5"></i>
-        <span class="text-[11px] font-medium">同步</span>
+      <button onclick="switchTab('sync')" id="nav-sync" class="nav-btn flex flex-col items-center justify-center text-slate-400">
+        <i class="fa-solid fa-cloud text-lg mb-0.5"></i><span class="text-[11px] font-medium">同步</span>
       </button>
     </div>
   </nav>
 
-  <!-- 动作新增/编辑弹窗 -->
-  <div id="exerciseModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h3 id="modalTitle" class="font-bold text-slate-800 text-base">添加/编辑训练动作</h3>
-        <button onclick="closeExerciseModal()" class="text-slate-400 hover:text-slate-600">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
+  <!-- 动作弹窗 -->
+  <div id="exerciseModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4">
+      <h3 id="modalTitle" class="font-bold text-slate-800 text-base">添加动作</h3>
       <input type="hidden" id="editExerciseId" />
       <div class="space-y-3 text-sm">
         <div>
-          <label class="block text-xs text-slate-500 mb-1">动作名称 *</label>
-          <input type="text" id="exNameInput" placeholder="例如：龙门架卷腹" class="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500" />
+          <label class="block text-xs text-slate-500 mb-1">名称</label>
+          <input type="text" id="exNameInput" class="w-full border border-slate-200 rounded-lg px-3 py-2" />
         </div>
-        <div class="grid grid-cols-3 gap-2.5">
+        <div class="grid grid-cols-3 gap-2">
           <div>
-            <label class="block text-xs text-slate-500 mb-1">目标组数</label>
-            <input type="number" id="exSetsInput" min="1" max="50" value="3" class="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500" />
-          </div>
-          <div>
-            <label class="block text-xs text-slate-500 mb-1">次数/时长</label>
-            <input type="text" id="exRepsInput" placeholder="12次 或 20分钟" class="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500" />
+            <label class="block text-xs text-slate-500 mb-1">组数</label>
+            <input type="number" id="exSetsInput" value="3" class="w-full border border-slate-200 rounded-lg px-3 py-2" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-1">配重 (kg)</label>
-            <input type="number" id="exWeightInput" step="0.5" min="0" value="20" class="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500" />
+            <label class="block text-xs text-slate-500 mb-1">次数</label>
+            <input type="text" id="exRepsInput" value="12次" class="w-full border border-slate-200 rounded-lg px-3 py-2" />
           </div>
-        </div>
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">动作示意图（支持上传图片）</label>
-          <div class="flex items-center space-x-3">
-            <label class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-2 rounded-lg cursor-pointer transition">
-              <i class="fa-regular fa-image mr-1"></i>上传图片
-              <input type="file" id="exImageInput" accept="image/*" class="hidden" onchange="handleModalImageUpload(event)" />
-            </label>
-            <button type="button" onclick="clearModalImage()" class="text-xs text-rose-500 hover:underline">清除图片</button>
-          </div>
-          <div id="modalImagePreviewWrap" class="mt-2 hidden">
-            <img id="modalImagePreview" src="" alt="预览" class="h-24 rounded-lg object-cover border border-slate-200" />
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">重量(kg)</label>
+            <input type="number" id="exWeightInput" value="20" class="w-full border border-slate-200 rounded-lg px-3 py-2" />
           </div>
         </div>
       </div>
-      <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
-        <button onclick="closeExerciseModal()" class="px-4 py-2 rounded-lg text-sm text-slate-600 bg-slate-100 hover:bg-slate-200">取消</button>
-        <button onclick="saveExerciseModal()" class="px-5 py-2 rounded-lg text-sm text-white bg-emerald-500 hover:bg-emerald-600 font-medium">保存</button>
+      <div class="flex justify-end space-x-2 pt-2">
+        <button onclick="closeExerciseModal()" class="px-4 py-2 rounded-lg text-sm bg-slate-100">取消</button>
+        <button onclick="saveExerciseModal()" class="px-5 py-2 rounded-lg text-sm text-white bg-emerald-500">保存</button>
       </div>
     </div>
   </div>
 
-  <!-- 全屏图片查看器 -->
-  <div id="imageViewerModal" onclick="closeImageViewer()" class="fixed inset-0 z-50 hidden bg-black/90 flex flex-col items-center justify-center p-4 cursor-zoom-out">
-    <img id="fullScreenImage" src="" alt="示意图" class="max-w-full max-h-[82vh] rounded-xl shadow-2xl object-contain bg-white" />
-    <p id="fullScreenCaption" class="text-white text-sm font-medium mt-4"></p>
-    <span class="text-slate-400 text-xs mt-1">点击任意处关闭</span>
-  </div>
-
-  <!-- Toast 提示 -->
-  <div id="toastBox" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-800 text-white text-xs px-4 py-2.5 rounded-full shadow-lg flex items-center space-x-2">
-    <i class="fa-solid fa-circle-info text-emerald-400"></i>
-    <span id="toastText">提示内容</span>
+  <div id="toastBox" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-800 text-white text-xs px-4 py-2 rounded-full shadow-lg">
+    <span id="toastText"></span>
   </div>
 
   <script>
-    // ==================== 图解生成 ====================
-    function createSvgPlaceholder(title, subtitle, colorHex) {
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="280" viewBox="0 0 400 280">
-        <rect width="100%" height="100%" fill="${colorHex}" rx="16"/>
-        <circle cx="200" cy="105" r="42" fill="rgba(255,255,255,0.18)"/>
-        <path d="M175 105 h50 M185 90 v30 M215 90 v30" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
-        <text x="200" y="185" font-family="sans-serif" font-size="24" font-weight="bold" fill="#ffffff" text-anchor="middle">${title}</text>
-        <text x="200" y="218" font-family="sans-serif" font-size="14" fill="rgba(255,255,255,0.85)" text-anchor="middle">${subtitle}</text>
-      </svg>`;
-      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
-    }
-
     function getInitialData() {
       return {
         selectedDay: "wed",
-        passcode: "",
+        ghToken: "",
+        ghOwner: "iversonchan7023-prog",
+        ghRepo: "健身应用",
         lastSync: "",
         days: {
-          mon: { name: "周一", theme: "胸+三头", exercises: [
-            { id: "m1", name: "平板杠铃卧推", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 60, image: "" },
-            { id: "m2", name: "上斜哑铃卧推", targetSets: 4, completedSets: 0, reps: "10-12次", weight: 22, image: "" }
-          ]},
-          tue: { name: "周二", theme: "背+二头", exercises: [
-            { id: "tu1", name: "高位下拉", targetSets: 4, completedSets: 0, reps: "10-12次", weight: 50, image: "" },
-            { id: "tu2", name: "坐姿划船", targetSets: 4, completedSets: 0, reps: "10-12次", weight: 45, image: "" }
-          ]},
+          mon: { name: "周一", theme: "胸+三头", exercises: [{ id: "m1", name: "平板杠铃卧推", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 60 }] },
+          tue: { name: "周二", theme: "背+二头", exercises: [{ id: "tu1", name: "高位下拉", targetSets: 4, completedSets: 0, reps: "10-12次", weight: 50 }] },
           wed: { name: "周三", theme: "有氧日", exercises: [
-            { id: "w1", name: "龙门架卷腹", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 20, image: "" },
-            { id: "w2", name: "悬垂抬腿", targetSets: 3, completedSets: 0, reps: "15次", weight: 20, image: createSvgPlaceholder("悬垂抬腿", "骨盆后倾卷腹 · 控制下放", "#059669") },
-            { id: "w3", name: "绳索伐木", targetSets: 3, completedSets: 0, reps: "15次", weight: 20, image: createSvgPlaceholder("绳索伐木", "核心抗旋发力 · 腹斜肌强化", "#0284c7") },
-            { id: "w4", name: "腹轮", targetSets: 3, completedSets: 0, reps: "10-12次", weight: 20, image: createSvgPlaceholder("腹轮推行", "收紧核心不塌腰 · 顶峰收缩", "#7c3aed") },
-            { id: "w5", name: "跑步机", targetSets: 1, completedSets: 0, reps: "20分钟", weight: 0, image: "" }
+            { id: "w1", name: "龙门架卷腹", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 20 },
+            { id: "w2", name: "悬垂抬腿", targetSets: 3, completedSets: 0, reps: "15次", weight: 20 },
+            { id: "w3", name: "绳索伐木", targetSets: 3, completedSets: 0, reps: "15次", weight: 20 },
+            { id: "w4", name: "腹轮", targetSets: 3, completedSets: 0, reps: "10-12次", weight: 20 },
+            { id: "w5", name: "跑步机", targetSets: 1, completedSets: 0, reps: "20分钟", weight: 0 }
           ]},
-          thu: { name: "周四", theme: "肩部训练", exercises: [
-            { id: "th1", name: "坐姿哑铃推举", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 18, image: "" }
-          ]},
-          fri: { name: "周五", theme: "腿部训练", exercises: [
-            { id: "f1", name: "杠铃深蹲", targetSets: 4, completedSets: 0, reps: "8-10次", weight: 80, image: "" }
-          ]},
-          sat: { name: "周六", theme: "核心+有氧", exercises: [
-            { id: "sa1", name: "平板支撑", targetSets: 3, completedSets: 0, reps: "60秒", weight: 0, image: "" }
-          ]},
-          sun: { name: "周日", theme: "休息恢复", exercises: [
-            { id: "su1", name: "全身拉伸放松", targetSets: 1, completedSets: 0, reps: "15分钟", weight: 0, image: "" }
-          ]}
+          thu: { name: "周四", theme: "肩部训练", exercises: [{ id: "th1", name: "坐姿哑铃推举", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 18 }] },
+          fri: { name: "周五", theme: "腿部训练", exercises: [{ id: "f1", name: "杠铃深蹲", targetSets: 4, completedSets: 0, reps: "8-10次", weight: 80 }] },
+          sat: { name: "周六", theme: "核心+有氧", exercises: [{ id: "sa1", name: "平板支撑", targetSets: 3, completedSets: 0, reps: "60秒", weight: 0 }] },
+          sun: { name: "周日", theme: "休息恢复", exercises: [{ id: "su1", name: "全身拉伸放松", targetSets: 1, completedSets: 0, reps: "15分钟", weight: 0 }] }
         },
         history: []
       };
     }
 
-    const STORAGE_KEY = "FITNESS_BUTLER_CN_V2";
+    const STORAGE_KEY = "FITNESS_BUTLER_GH_V1";
     let appData = loadState();
     let currentTab = "train";
-    let modalTempImage = "";
-
-    let workoutSeconds = 0;
-    let workoutInterval = null;
-    let restSeconds = 0;
-    let restInterval = null;
-
-    const nowDate = new Date();
-    let calYear = nowDate.getFullYear();
-    let calMonth = nowDate.getMonth();
-    let selectedCalendarDateStr = formatDateYMD(nowDate);
+    let workoutSeconds = 0, workoutInterval = null, restSeconds = 0, restInterval = null;
+    let calYear = new Date().getFullYear(), calMonth = new Date().getMonth();
+    let selectedCalendarDateStr = formatDateYMD(new Date());
     let weightChartInstance = null;
 
     function loadState() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) {
-          const init = getInitialData();
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(init));
-          return init;
-        }
-        const parsed = JSON.parse(raw);
-        if (!parsed.days || !parsed.days.wed) return getInitialData();
-        return parsed;
+        return raw ? Object.assign(getInitialData(), JSON.parse(raw)) : getInitialData();
       } catch (e) {
         return getInitialData();
       }
     }
 
     function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-      } catch (e) {
-        showToast("存储已满，建议清理示意图");
-      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
     }
 
     function showToast(msg) {
       const box = document.getElementById("toastBox");
-      const text = document.getElementById("toastText");
-      text.textContent = msg;
+      document.getElementById("toastText").textContent = msg;
       box.classList.remove("hidden");
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => box.classList.add("hidden"), 2600);
+      clearTimeout(window._t);
+      window._t = setTimeout(() => box.classList.add("hidden"), 2500);
     }
 
     function formatHMS(sec) {
@@ -423,17 +331,8 @@
       return `${h}:${m}:${s}`;
     }
 
-    function formatMS(sec) {
-      const m = String(Math.floor(sec / 60)).padStart(2, "0");
-      const s = String(sec % 60).padStart(2, "0");
-      return `${m}:${s}`;
-    }
-
     function formatDateYMD(d) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     }
 
     function toggleWorkoutTimer() {
@@ -442,79 +341,60 @@
         clearInterval(workoutInterval);
         workoutInterval = null;
         btn.innerHTML = '<i class="fa-solid fa-play"></i>';
-        btn.classList.replace("bg-amber-500", "bg-emerald-500");
       } else {
         workoutInterval = setInterval(() => {
           workoutSeconds++;
           document.getElementById("workoutTimerDisplay").textContent = formatHMS(workoutSeconds);
         }, 1000);
         btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-        btn.classList.replace("bg-emerald-500", "bg-amber-500");
       }
     }
 
     function resetWorkoutTimer() {
-      if (workoutInterval) {
-        clearInterval(workoutInterval);
-        workoutInterval = null;
-      }
+      if (workoutInterval) clearInterval(workoutInterval);
+      workoutInterval = null;
       workoutSeconds = 0;
       document.getElementById("workoutTimerDisplay").textContent = "00:00:00";
-      const btn = document.getElementById("workoutTimerBtn");
-      btn.innerHTML = '<i class="fa-solid fa-play"></i>';
-      btn.classList.remove("bg-amber-500");
-      btn.classList.add("bg-emerald-500");
+      document.getElementById("workoutTimerBtn").innerHTML = '<i class="fa-solid fa-play"></i>';
     }
 
-    function startRestTimer(seconds) {
-      restSeconds = seconds;
+    function startRestTimer(s) {
+      restSeconds = s;
       document.getElementById("restFloatingModal").classList.remove("hidden");
-      updateRestDisplay();
+      document.getElementById("restTimerDisplay").textContent = `00:${String(s).padStart(2, "0")}`;
       if (restInterval) clearInterval(restInterval);
       restInterval = setInterval(() => {
         restSeconds--;
         if (restSeconds <= 0) {
           skipRestTimer();
-          showToast("休息完毕，继续加油！");
+          showToast("休息结束！");
         } else {
-          updateRestDisplay();
+          const m = String(Math.floor(restSeconds / 60)).padStart(2, "0");
+          const sec = String(restSeconds % 60).padStart(2, "0");
+          document.getElementById("restTimerDisplay").textContent = `${m}:${sec}`;
         }
       }, 1000);
     }
 
-    function updateRestDisplay() {
-      document.getElementById("restTimerDisplay").textContent = formatMS(Math.max(0, restSeconds));
-    }
-
-    function addRestTime(sec) {
-      restSeconds += sec;
-      updateRestDisplay();
-    }
-
+    function addRestTime(s) { restSeconds += s; }
     function skipRestTimer() {
-      if (restInterval) {
-        clearInterval(restInterval);
-        restInterval = null;
-      }
+      if (restInterval) clearInterval(restInterval);
+      restInterval = null;
       document.getElementById("restFloatingModal").classList.add("hidden");
     }
 
-    function switchTab(tab) {
-      currentTab = tab;
+    function switchTab(t) {
+      currentTab = t;
       document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
-      document.getElementById(`tab-${tab}`).classList.remove("hidden");
+      document.getElementById(`tab-${t}`).classList.remove("hidden");
+      document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.replace("text-emerald-600", "text-slate-400"));
+      document.getElementById(`nav-${t}`).classList.replace("text-slate-400", "text-emerald-600");
 
-      document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.classList.remove("text-emerald-600");
-        btn.classList.add("text-slate-400");
-      });
-      document.getElementById(`nav-${tab}`).classList.replace("text-slate-400", "text-emerald-600");
-
-      if (tab === "train") renderTrainTab();
-      if (tab === "calendar") renderCalendarTab();
-      if (tab === "history") renderHistoryTab();
-      if (tab === "stats") renderStatsTab();
-      if (tab === "sync") renderSyncTab();
+      if (t === "train") renderTrainTab();
+      if (t === "calendar") renderCalendarTab();
+      if (t === "history") renderHistoryTab();
+      if (t === "stats") renderStatsTab();
+      if (t === "sync") renderSyncTab();
     }
 
     const DAY_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
@@ -522,94 +402,35 @@
     function renderTrainTab() {
       const selector = document.getElementById("daySelector");
       selector.innerHTML = "";
-      DAY_ORDER.forEach(key => {
-        const d = appData.days[key];
-        const isSelected = appData.selectedDay === key;
+      DAY_ORDER.forEach(k => {
+        const d = appData.days[k];
+        const isSel = appData.selectedDay === k;
         const btn = document.createElement("button");
-        btn.className = `flex-shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium transition border ${
-          isSelected
-            ? "bg-slate-900 text-white border-slate-900 shadow-sm"
-            : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
-        }`;
-        btn.innerHTML = `<div class="font-bold">${d.name}</div><div class="text-[10px] ${isSelected ? 'text-emerald-400' : 'text-slate-400'}">${d.theme}</div>`;
-        btn.onclick = () => {
-          appData.selectedDay = key;
-          saveState();
-          renderTrainTab();
-        };
+        btn.className = `flex-shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium border ${isSel ? 'bg-slate-900 text-white' : 'bg-white text-slate-600'}`;
+        btn.innerHTML = `<div class="font-bold">${d.name}</div><div class="text-[10px] text-slate-400">${d.theme}</div>`;
+        btn.onclick = () => { appData.selectedDay = k; saveState(); renderTrainTab(); };
         selector.appendChild(btn);
       });
 
       const curDay = appData.days[appData.selectedDay];
-      document.getElementById("currentDayLabel").textContent = `${curDay.name}（${curDay.theme}）`;
-
+      document.getElementById("currentDayLabel").textContent = `${curDay.name} · ${curDay.theme}`;
       const listEl = document.getElementById("exerciseList");
       listEl.innerHTML = "";
 
-      if (curDay.exercises.length === 0) {
-        listEl.innerHTML = `<div class="bg-white rounded-xl p-8 text-center text-slate-400 text-sm border border-slate-100">今日暂无动作</div>`;
-        return;
-      }
-
       curDay.exercises.forEach((ex, idx) => {
         const isDone = ex.completedSets >= ex.targetSets;
-        const progressPct = Math.min(100, Math.round((ex.completedSets / ex.targetSets) * 100));
         const card = document.createElement("div");
-        card.className = `bg-white rounded-xl p-4 shadow-sm border transition ${
-          isDone ? "border-emerald-400 bg-emerald-50/20" : "border-slate-100"
-        }`;
-
-        const weightBadge = ex.weight > 0 ? `<span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-xs font-medium">${ex.weight}kg</span>` : "";
-
+        card.className = `bg-white rounded-xl p-4 shadow-sm border ${isDone ? 'border-emerald-400 bg-emerald-50/20' : 'border-slate-100'}`;
         card.innerHTML = `
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex items-start space-x-3 flex-1">
-              ${
-                ex.image
-                  ? `<img src="${ex.image}" alt="${ex.name}" onclick="openImageViewer('${ex.id}')" class="w-16 h-16 rounded-lg object-cover border border-slate-200 flex-shrink-0 cursor-zoom-in hover:opacity-90 transition"/>`
-                  : `<label class="w-16 h-16 rounded-lg bg-slate-50 border border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 hover:text-emerald-500 cursor-pointer flex-shrink-0">
-                      <i class="fa-regular fa-image text-sm"></i>
-                      <span class="text-[10px] mt-0.5">传图</span>
-                      <input type="file" accept="image/*" class="hidden" onchange="quickUploadExerciseImg(event, '${ex.id}')" />
-                    </label>`
-              }
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center space-x-1.5">
-                  <h3 class="font-bold text-slate-800 text-base truncate">${idx + 1}. ${ex.name}</h3>
-                  ${isDone ? '<i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>' : ''}
-                </div>
-                <div class="flex flex-wrap items-center gap-1.5 mt-1">
-                  <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-xs font-medium">${ex.targetSets}组</span>
-                  <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-xs font-medium">${ex.reps}</span>
-                  ${weightBadge}
-                </div>
-              </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-bold text-slate-800">${idx + 1}. ${ex.name}</h3>
+              <p class="text-xs text-slate-500 mt-1">${ex.targetSets}组 · ${ex.reps} · <b>${ex.weight}kg</b></p>
             </div>
-
-            <div class="flex items-center space-x-1 text-slate-400">
-              <button onclick="moveExercise(${idx}, -1)" class="w-7 h-7 rounded hover:bg-slate-100"><i class="fa-solid fa-arrow-up text-xs"></i></button>
-              <button onclick="moveExercise(${idx}, 1)" class="w-7 h-7 rounded hover:bg-slate-100"><i class="fa-solid fa-arrow-down text-xs"></i></button>
-              <button onclick="openExerciseModal('${ex.id}')" class="w-7 h-7 rounded hover:bg-slate-100 hover:text-emerald-600"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
-              <button onclick="deleteExercise('${ex.id}')" class="w-7 h-7 rounded hover:bg-rose-50 hover:text-rose-500"><i class="fa-regular fa-trash-can text-xs"></i></button>
-            </div>
-          </div>
-
-          <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-            <div class="flex-1 mr-4">
-              <div class="flex justify-between text-xs mb-1">
-                <span class="text-slate-500">完成组数</span>
-                <span class="font-bold ${isDone ? 'text-emerald-600' : 'text-slate-700'}">${ex.completedSets} / ${ex.targetSets} 组</span>
-              </div>
-              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bg-emerald-500" style="width: ${progressPct}%"></div>
-              </div>
-            </div>
-            <div class="flex items-center space-x-2">
-              <button onclick="changeSetCount('${ex.id}', -1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold"><i class="fa-solid fa-minus text-xs"></i></button>
-              <button onclick="changeSetCount('${ex.id}', 1)" class="px-3.5 h-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold flex items-center space-x-1">
-                <i class="fa-solid fa-check"></i>
-                <span>+1组</span>
-              </button>
+            <div class="flex items-center space-x-1.5">
+              <button onclick="changeSetCount('${ex.id}', -1)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold">-</button>
+              <span class="text-xs font-bold px-2">${ex.completedSets}/${ex.targetSets}组</span>
+              <button onclick="changeSetCount('${ex.id}', 1)" class="px-3 h-8 rounded-lg bg-emerald-500 text-white text-xs font-bold">+1组</button>
             </div>
           </div>
         `;
@@ -617,669 +438,313 @@
       });
     }
 
-    function editDayTheme() {
-      const curDay = appData.days[appData.selectedDay];
-      const newTheme = prompt(`修改「${curDay.name}」的训练主题：`, curDay.theme);
-      if (newTheme !== null && newTheme.trim() !== "") {
-        curDay.theme = newTheme.trim();
-        saveState();
-        renderTrainTab();
-      }
-    }
-
-    function changeSetCount(exId, delta) {
-      const curDay = appData.days[appData.selectedDay];
-      const ex = curDay.exercises.find(item => item.id === exId);
+    function changeSetCount(id, d) {
+      const ex = appData.days[appData.selectedDay].exercises.find(i => i.id === id);
       if (!ex) return;
-      ex.completedSets = Math.max(0, ex.completedSets + delta);
+      ex.completedSets = Math.max(0, ex.completedSets + d);
       saveState();
       renderTrainTab();
-      if (delta > 0) {
-        if (!workoutInterval && workoutSeconds === 0) toggleWorkoutTimer();
-        startRestTimer(60);
-      }
+      if (d > 0) startRestTimer(60);
     }
 
-    function moveExercise(index, direction) {
-      const list = appData.days[appData.selectedDay].exercises;
-      const targetIndex = index + direction;
-      if (targetIndex < 0 || targetIndex >= list.length) return;
-      const temp = list[index];
-      list[index] = list[targetIndex];
-      list[targetIndex] = temp;
-      saveState();
-      renderTrainTab();
+    function editDayTheme() {
+      const cur = appData.days[appData.selectedDay];
+      const res = prompt("修改训练主题", cur.theme);
+      if (res) { cur.theme = res.trim(); saveState(); renderTrainTab(); }
     }
 
-    function deleteExercise(exId) {
-      if (!confirm("确定要删除该动作吗？")) return;
-      const curDay = appData.days[appData.selectedDay];
-      curDay.exercises = curDay.exercises.filter(item => item.id !== exId);
-      saveState();
-      renderTrainTab();
-      showToast("动作已删除");
+    function openExerciseModal() {
+      document.getElementById("exNameInput").value = "";
+      document.getElementById("exerciseModal").classList.remove("hidden");
     }
-
-    function openExerciseModal(exId = null) {
-      const modal = document.getElementById("exerciseModal");
-      const title = document.getElementById("modalTitle");
-      const idInput = document.getElementById("editExerciseId");
-      const nameInput = document.getElementById("exNameInput");
-      const setsInput = document.getElementById("exSetsInput");
-      const repsInput = document.getElementById("exRepsInput");
-      const weightInput = document.getElementById("exWeightInput");
-      const previewWrap = document.getElementById("modalImagePreviewWrap");
-      const previewImg = document.getElementById("modalImagePreview");
-
-      if (exId) {
-        const ex = appData.days[appData.selectedDay].exercises.find(i => i.id === exId);
-        if (!ex) return;
-        title.textContent = "编辑训练动作";
-        idInput.value = ex.id;
-        nameInput.value = ex.name;
-        setsInput.value = ex.targetSets;
-        repsInput.value = ex.reps;
-        weightInput.value = ex.weight;
-        modalTempImage = ex.image || "";
-      } else {
-        title.textContent = "添加新动作";
-        idInput.value = "";
-        nameInput.value = "";
-        setsInput.value = 3;
-        repsInput.value = "12次";
-        weightInput.value = 20;
-        modalTempImage = "";
-      }
-
-      if (modalTempImage) {
-        previewImg.src = modalTempImage;
-        previewWrap.classList.remove("hidden");
-      } else {
-        previewWrap.classList.add("hidden");
-      }
-      modal.classList.remove("hidden");
-    }
-
     function closeExerciseModal() {
       document.getElementById("exerciseModal").classList.add("hidden");
     }
-
-    function compressImageFile(file, callback) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement("canvas");
-          const MAX_WIDTH = 480;
-          let w = img.width;
-          let h = img.height;
-          if (w > MAX_WIDTH) {
-            h = Math.round((h * MAX_WIDTH) / w);
-            w = MAX_WIDTH;
-          }
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, w, h);
-          callback(canvas.toDataURL("image/jpeg", 0.75));
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function handleModalImageUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      compressImageFile(file, (base64) => {
-        modalTempImage = base64;
-        document.getElementById("modalImagePreview").src = base64;
-        document.getElementById("modalImagePreviewWrap").classList.remove("hidden");
-      });
-    }
-
-    function clearModalImage() {
-      modalTempImage = "";
-      document.getElementById("modalImagePreviewWrap").classList.add("hidden");
-    }
-
-    function quickUploadExerciseImg(event, exId) {
-      const file = event.target.files[0];
-      if (!file) return;
-      compressImageFile(file, (base64) => {
-        const ex = appData.days[appData.selectedDay].exercises.find(i => i.id === exId);
-        if (ex) {
-          ex.image = base64;
-          saveState();
-          renderTrainTab();
-          showToast("示意图已保存");
-        }
-      });
-    }
-
     function saveExerciseModal() {
-      const id = document.getElementById("editExerciseId").value;
       const name = document.getElementById("exNameInput").value.trim();
-      const targetSets = parseInt(document.getElementById("exSetsInput").value, 10) || 1;
-      const reps = document.getElementById("exRepsInput").value.trim() || "10次";
+      const sets = parseInt(document.getElementById("exSetsInput").value) || 3;
+      const reps = document.getElementById("exRepsInput").value.trim() || "12次";
       const weight = parseFloat(document.getElementById("exWeightInput").value) || 0;
-
-      if (!name) {
-        showToast("请输入动作名称");
-        return;
-      }
-
-      const curDay = appData.days[appData.selectedDay];
-      if (id) {
-        const ex = curDay.exercises.find(i => i.id === id);
-        if (ex) {
-          ex.name = name;
-          ex.targetSets = targetSets;
-          ex.reps = reps;
-          ex.weight = weight;
-          ex.image = modalTempImage;
-        }
-      } else {
-        curDay.exercises.push({
-          id: "ex_" + Date.now(),
-          name,
-          targetSets,
-          completedSets: 0,
-          reps,
-          weight,
-          image: modalTempImage
-        });
-      }
-
+      if (!name) return;
+      appData.days[appData.selectedDay].exercises.push({
+        id: "ex_" + Date.now(), name, targetSets: sets, completedSets: 0, reps, weight
+      });
       saveState();
       closeExerciseModal();
       renderTrainTab();
-      showToast("动作已保存");
-    }
-
-    function openImageViewer(exId) {
-      const ex = appData.days[appData.selectedDay].exercises.find(i => i.id === exId);
-      if (!ex || !ex.image) return;
-      document.getElementById("fullScreenImage").src = ex.image;
-      document.getElementById("fullScreenCaption").textContent = `${ex.name}（${ex.targetSets}组 × ${ex.reps}）`;
-      document.getElementById("imageViewerModal").classList.remove("hidden");
-    }
-
-    function closeImageViewer() {
-      document.getElementById("imageViewerModal").classList.add("hidden");
     }
 
     function finishTodayWorkout() {
-      const curDay = appData.days[appData.selectedDay];
-      const doneExercises = curDay.exercises.filter(e => e.completedSets > 0);
-
-      const now = new Date();
-      const dateStr = formatDateYMD(now);
-      const timeStr = now.toTimeString().slice(0, 5);
-
-      const itemsToSave = (doneExercises.length > 0 ? doneExercises : curDay.exercises).map(e => ({
-        name: e.name,
-        completedSets: e.completedSets > 0 ? e.completedSets : e.targetSets,
-        targetSets: e.targetSets,
-        reps: e.reps,
-        weight: e.weight
-      }));
-
-      const record = {
+      const cur = appData.days[appData.selectedDay];
+      appData.history.unshift({
         id: "rec_" + Date.now(),
-        date: dateStr,
-        time: timeStr,
-        dayTitle: `${curDay.name} · ${curDay.theme}`,
+        date: formatDateYMD(new Date()),
+        time: new Date().toTimeString().slice(0, 5),
+        dayTitle: `${cur.name} · ${cur.theme}`,
         durationSeconds: workoutSeconds,
-        items: itemsToSave
-      };
-
-      appData.history.unshift(record);
-      curDay.exercises.forEach(e => { e.completedSets = 0; });
-
+        items: cur.exercises.map(e => ({ name: e.name, completedSets: e.completedSets || e.targetSets, weight: e.weight }))
+      });
+      cur.exercises.forEach(e => e.completedSets = 0);
       resetWorkoutTimer();
-      skipRestTimer();
       saveState();
       renderTrainTab();
-      showToast("今日训练已成功归档！");
-    }
-
-    function changeCalendarMonth(delta) {
-      calMonth += delta;
-      if (calMonth < 0) {
-        calMonth = 11;
-        calYear--;
-      } else if (calMonth > 11) {
-        calMonth = 0;
-        calYear++;
-      }
-      renderCalendarTab();
+      showToast("今日训练已归档！");
     }
 
     function renderCalendarTab() {
       document.getElementById("calendarMonthTitle").textContent = `${calYear}年 ${calMonth + 1}月`;
       const grid = document.getElementById("calendarGrid");
       grid.innerHTML = "";
-
       const firstDay = new Date(calYear, calMonth, 1);
-      const startWeekday = (firstDay.getDay() + 6) % 7;
-      const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-      const recordDates = new Set(appData.history.map(r => r.date));
+      const startW = (firstDay.getDay() + 6) % 7;
+      const totalD = new Date(calYear, calMonth + 1, 0).getDate();
+      const hasRec = new Set(appData.history.map(r => r.date));
 
-      for (let i = 0; i < startWeekday; i++) {
-        const empty = document.createElement("div");
-        empty.className = "h-10";
-        grid.appendChild(empty);
+      for (let i = 0; i < startW; i++) grid.appendChild(document.createElement("div"));
+      for (let d = 1; d <= totalD; d++) {
+        const dStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+        const b = document.createElement("button");
+        b.className = `h-10 rounded-xl text-xs font-medium ${selectedCalendarDateStr === dStr ? 'bg-slate-900 text-white' : hasRec.has(dStr) ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-50'}`;
+        b.textContent = d;
+        b.onclick = () => { selectedCalendarDateStr = dStr; renderCalendarTab(); };
+        grid.appendChild(b);
       }
-
-      for (let d = 1; d <= daysInMonth; d++) {
-        const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-        const hasWorkout = recordDates.has(dateStr);
-        const isSelected = selectedCalendarDateStr === dateStr;
-
-        const cell = document.createElement("button");
-        cell.className = `h-10 rounded-xl flex flex-col items-center justify-center relative transition font-medium ${
-          isSelected
-            ? "bg-slate-900 text-white shadow-xs"
-            : hasWorkout
-            ? "bg-emerald-100 text-emerald-800 font-bold hover:bg-emerald-200"
-            : "bg-slate-50 text-slate-700 hover:bg-slate-100"
-        }`;
-        cell.innerHTML = `
-          <span>${d}</span>
-          ${hasWorkout ? `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-emerald-400' : 'bg-emerald-500'} mt-0.5"></span>` : ''}
-        `;
-        cell.onclick = () => {
-          selectedCalendarDateStr = dateStr;
-          renderCalendarTab();
-        };
-        grid.appendChild(cell);
-      }
-      renderCalendarDayDetail();
-    }
-
-    function renderCalendarDayDetail() {
-      const container = document.getElementById("calendarDayDetail");
-      const dayRecords = appData.history.filter(r => r.date === selectedCalendarDateStr);
-
-      if (dayRecords.length === 0) {
-        container.innerHTML = `<div class="bg-white p-5 rounded-xl border border-slate-100 text-center text-slate-400 text-xs">${selectedCalendarDateStr} 暂无打卡记录</div>`;
-        return;
-      }
-
-      container.innerHTML = dayRecords.map(rec => `
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-2">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-            <div>
-              <span class="font-bold text-slate-800 text-sm">${rec.dayTitle}</span>
-              <span class="text-xs text-slate-400 ml-2">${rec.date} ${rec.time}</span>
-            </div>
-            <span class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded font-medium">用时 ${formatHMS(rec.durationSeconds || 0)}</span>
-          </div>
-          <div class="space-y-1.5 pt-1">
-            ${rec.items.map(it => `
-              <div class="flex items-center justify-between text-xs text-slate-600">
-                <span class="font-medium text-slate-700">${it.name}</span>
-                <span>${it.completedSets}组 · <b>${it.weight > 0 ? it.weight + 'kg' : it.reps}</b></span>
-              </div>
-            `).join("")}
-          </div>
+      const recs = appData.history.filter(r => r.date === selectedCalendarDateStr);
+      document.getElementById("calendarDayDetail").innerHTML = recs.length === 0 ? `<div class="text-center text-xs text-slate-400 py-4">无训练记录</div>` : recs.map(r => `
+        <div class="bg-white p-3 rounded-xl border border-slate-100 text-xs">
+          <div class="font-bold text-slate-700">${r.dayTitle} (${r.time})</div>
+          <div class="mt-1 text-slate-500">${r.items.map(i => `${i.name} ${i.completedSets}组`).join(", ")}</div>
         </div>
       `).join("");
+    }
+    function changeCalendarMonth(d) {
+      calMonth += d;
+      if (calMonth < 0) { calMonth = 11; calYear--; }
+      if (calMonth > 11) { calMonth = 0; calYear++; }
+      renderCalendarTab();
     }
 
     function renderHistoryTab() {
-      document.getElementById("historyCountText").textContent = `共 ${appData.history.length} 条训练归档`;
-      const listEl = document.getElementById("historyList");
-
-      if (appData.history.length === 0) {
-        listEl.innerHTML = `<div class="bg-white p-8 rounded-xl border border-slate-100 text-center text-slate-400 text-sm">暂无历史记录</div>`;
-        return;
-      }
-
-      listEl.innerHTML = appData.history.map(rec => `
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <div>
-              <span class="font-bold text-slate-800 text-sm">${rec.dayTitle}</span>
-              <p class="text-xs text-slate-400">${rec.date} ${rec.time} · 用时 ${formatHMS(rec.durationSeconds || 0)}</p>
-            </div>
-            <button onclick="deleteSingleHistory('${rec.id}')" class="text-slate-400 hover:text-rose-500 p-1.5"><i class="fa-regular fa-trash-can text-sm"></i></button>
+      document.getElementById("historyCountText").textContent = `共 ${appData.history.length} 条`;
+      document.getElementById("historyList").innerHTML = appData.history.map(r => `
+        <div class="bg-white p-3.5 rounded-xl border border-slate-100 text-xs flex justify-between items-center">
+          <div>
+            <div class="font-bold text-slate-800">${r.dayTitle}</div>
+            <div class="text-slate-400 mt-0.5">${r.date} ${r.time} · 用时 ${formatHMS(r.durationSeconds || 0)}</div>
           </div>
-          <div class="bg-slate-50 rounded-lg p-2.5 space-y-1.5">
-            ${rec.items.map(it => `
-              <div class="flex justify-between text-xs">
-                <span class="text-slate-700 font-medium">${it.name}</span>
-                <span class="text-slate-500">${it.completedSets}组 · <b class="text-emerald-600">${it.weight > 0 ? it.weight + 'kg' : it.reps}</b></span>
-              </div>
-            `).join("")}
-          </div>
+          <button onclick="deleteHistory('${r.id}')" class="text-rose-500"><i class="fa-regular fa-trash-can"></i></button>
         </div>
       `).join("");
     }
-
-    function deleteSingleHistory(recId) {
-      if (!confirm("确定删除这条打卡记录吗？")) return;
-      appData.history = appData.history.filter(r => r.id !== recId);
+    function deleteHistory(id) {
+      appData.history = appData.history.filter(i => i.id !== id);
       saveState();
       renderHistoryTab();
     }
-
     function clearAllHistory() {
-      if (appData.history.length === 0) return;
-      if (!confirm("确定要清空全部历史记录吗？")) return;
-      appData.history = [];
-      saveState();
-      renderHistoryTab();
+      if (confirm("清空历史？")) { appData.history = []; saveState(); renderHistoryTab(); }
     }
 
     function renderStatsTab() {
       const select = document.getElementById("statsExerciseSelect");
-      const nameSet = new Set();
-      DAY_ORDER.forEach(k => appData.days[k].exercises.forEach(e => nameSet.add(e.name)));
-      appData.history.forEach(r => r.items.forEach(i => nameSet.add(i.name)));
-
-      const currentVal = select.value;
-      select.innerHTML = "";
-      Array.from(nameSet).forEach(name => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
-      });
-
-      if (currentVal && nameSet.has(currentVal)) select.value = currentVal;
+      const names = new Set();
+      DAY_ORDER.forEach(k => appData.days[k].exercises.forEach(e => names.add(e.name)));
+      select.innerHTML = Array.from(names).map(n => `<option value="${n}">${n}</option>`).join("");
       renderStatsChart();
     }
 
     function renderStatsChart() {
-      const exName = document.getElementById("statsExerciseSelect").value;
-      const tip = document.getElementById("statsEmptyTip");
-      const points = [];
-      const reversedHistory = [...appData.history].reverse();
-      reversedHistory.forEach(rec => {
-        rec.items.forEach(it => {
-          if (it.name === exName) {
-            points.push({ label: rec.date.slice(5), weight: Number(it.weight) || 0 });
-          }
-        });
+      const name = document.getElementById("statsExerciseSelect").value;
+      const pts = [];
+      [...appData.history].reverse().forEach(r => {
+        const item = r.items.find(i => i.name === name);
+        if (item) pts.push({ label: r.date.slice(5), weight: item.weight || 0 });
       });
-
-      if (points.length === 0) {
-        tip.classList.remove("hidden");
-        let presetWeight = 0;
-        DAY_ORDER.forEach(k => appData.days[k].exercises.forEach(e => {
-          if (e.name === exName) presetWeight = e.weight;
-        }));
-        points.push({ label: "预设", weight: presetWeight });
-      } else {
-        tip.classList.add("hidden");
-      }
-
+      if (pts.length === 0) pts.push({ label: "预设", weight: 20 });
       const ctx = document.getElementById("weightChart").getContext("2d");
       if (weightChartInstance) weightChartInstance.destroy();
-
       weightChartInstance = new Chart(ctx, {
         type: "line",
         data: {
-          labels: points.map(p => p.label),
-          datasets: [{
-            label: `${exName} 配重 (kg)`,
-            data: points.map(p => p.weight),
-            borderColor: "#10b981",
-            backgroundColor: "rgba(16, 185, 129, 0.15)",
-            borderWidth: 2,
-            pointBackgroundColor: "#059669",
-            tension: 0.3,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: { y: { beginAtZero: true } }
+          labels: pts.map(p => p.label),
+          datasets: [{ label: `${name} (kg)`, data: pts.map(p => p.weight), borderColor: "#10b981", tension: 0.3 }]
         }
       });
     }
 
-    // ==================== 全网高可用免翻墙云同步机制 ====================
-    // 使用双路由分发策略（多节点容灾）
+    // ==================== GitHub 原生直连同步逻辑 ====================
     function renderSyncTab() {
-      document.getElementById("syncPasscodeInput").value = appData.passcode || "";
-      if (appData.lastSync) {
-        document.getElementById("lastSyncTimeText").textContent = `上次同步: ${appData.lastSync}`;
-      }
+      document.getElementById("ghTokenInput").value = appData.ghToken || "";
+      document.getElementById("ghOwnerInput").value = appData.ghOwner || "iversonchan7023-prog";
+      document.getElementById("ghRepoInput").value = appData.ghRepo || "健身应用";
+      if (appData.lastSync) document.getElementById("lastSyncTimeText").textContent = `上次同步: ${appData.lastSync}`;
     }
 
-    function updateSyncStatus(text, isOk = true) {
-      const statusText = document.getElementById("syncStatusText");
-      const dot = document.getElementById("cloudStatusDot");
-      statusText.textContent = `状态：${text}`;
-      statusText.className = isOk ? "text-emerald-600 font-medium" : "text-rose-500 font-medium";
-      dot.className = `w-2 h-2 rounded-full ${isOk ? 'bg-emerald-400' : 'bg-rose-400'}`;
-    }
-
-    function savePasscode() {
-      const code = document.getElementById("syncPasscodeInput").value.trim();
-      if (!code) {
-        showToast("请输入口令");
-        return;
-      }
-      appData.passcode = code;
+    function saveGitHubConfig() {
+      appData.ghToken = document.getElementById("ghTokenInput").value.trim();
+      appData.ghOwner = document.getElementById("ghOwnerInput").value.trim();
+      appData.ghRepo = document.getElementById("ghRepoInput").value.trim();
       saveState();
-      showToast(`口令「${code}」保存成功`);
-      updateSyncStatus("口令已就绪，可随时推送/拉取", true);
+      showToast("GitHub 配置已保存！");
     }
 
-    function buildCloudPayload() {
-      const clone = JSON.parse(JSON.stringify(appData));
-      DAY_ORDER.forEach(k => {
-        clone.days[k].exercises.forEach(e => {
-          if (e.image && e.image.startsWith("data:image/svg+xml")) {
-            e.image = "__DEFAULT_SVG__";
-          }
-        });
-      });
-      return clone;
+    function updateSyncStatus(text, ok) {
+      const el = document.getElementById("syncStatusText");
+      el.textContent = "状态：" + text;
+      el.className = ok ? "text-emerald-600 font-medium" : "text-rose-500 font-medium";
     }
 
-    function restoreCloudPayload(remoteData) {
-      const defaultWed = getInitialData().days.wed.exercises;
-      DAY_ORDER.forEach(k => {
-        if (remoteData.days && remoteData.days[k]) {
-          remoteData.days[k].exercises.forEach(e => {
-            if (e.image === "__DEFAULT_SVG__") {
-              const found = defaultWed.find(d => d.name === e.name);
-              e.image = found ? found.image : "";
-            }
-          });
-        }
-      });
-      return remoteData;
+    // 字符串安全转 Base64（支持中文）
+    function utf8ToBase64(str) {
+      return window.btoa(unescape(encodeURIComponent(str)));
+    }
+    function base64ToUtf8(str) {
+      return decodeURIComponent(escape(window.atob(str)));
     }
 
-    // 国内网络直连双通道：
-    // 通道A: ntfy/kv 开放无墙接口
-    // 通道B: dpaste/cors 镜像通道
-    async function pushToCloud() {
-      const codeInput = document.getElementById("syncPasscodeInput").value.trim();
-      if (codeInput) appData.passcode = codeInput;
-
-      if (!appData.passcode) {
-        showToast("请先输入并保存同步口令");
+    async function pushToGitHub() {
+      if (!appData.ghToken) {
+        showToast("请先填入 GitHub Token");
         return;
       }
-
-      const btn = document.getElementById("btnPushCloud");
-      const origText = btn.innerHTML;
+      const btn = document.getElementById("btnPush");
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>上传中...</span>';
-      updateSyncStatus("正在推送至云端...", true);
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>推送中...</span>';
+      updateSyncStatus("正在向 GitHub 仓库提交数据...", true);
 
-      const payloadStr = JSON.stringify(buildCloudPayload());
-      // 口令前缀隔离
-      const channelKey = "fit_sync_channel_" + encodeURIComponent(appData.passcode);
+      const owner = encodeURIComponent(appData.ghOwner);
+      const repo = encodeURIComponent(appData.ghRepo);
+      const filePath = "data.json";
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
 
       try {
-        // 使用国内无须梯子、支持任意 CORS POST 的公开通道
-        const res = await fetch(`https://ntfy.sh/${channelKey}`, {
-          method: "POST",
+        // 先获取现存文件的 sha（如果已存在）
+        let sha = "";
+        const getRes = await fetch(apiUrl, {
           headers: {
-            "Title": "FIT_DATA_SYNC",
-            "Priority": "high"
+            "Authorization": `Bearer ${appData.ghToken}`,
+            "Accept": "application/vnd.github.v3+json"
+          }
+        });
+        if (getRes.ok) {
+          const fileMeta = await getRes.json();
+          sha = fileMeta.sha;
+        }
+
+        // 提交写入 data.json
+        const contentBase64 = utf8ToBase64(JSON.stringify(appData, null, 2));
+        const putRes = await fetch(apiUrl, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${appData.ghToken}`,
+            "Content-Type": "application/json",
+            "Accept": "application/vnd.github.v3+json"
           },
-          body: payloadStr
+          body: JSON.stringify({
+            message: "Sync fitness data from app",
+            content: contentBase64,
+            sha: sha || undefined
+          })
         });
 
-        if (!res.ok) throw new Error("上传失败");
+        if (!putRes.ok) throw new Error("GitHub 认证失败或权限不足");
 
-        const timeNow = new Date().toLocaleTimeString();
-        appData.lastSync = timeNow;
+        appData.lastSync = new Date().toLocaleTimeString();
         saveState();
-        document.getElementById("lastSyncTimeText").textContent = `上次同步: ${timeNow}`;
-        updateSyncStatus("推送成功！在另一设备输入相同口令点击「从云端拉取」即可", true);
-        showToast("已成功推送到云端！");
-      } catch (e) {
-        updateSyncStatus("网络超时，请先使用下方【导出JSON备份】通过微信发送", false);
-        showToast("云端受阻，建议微信传输离线备份");
+        renderSyncTab();
+        updateSyncStatus("已成功同步至 GitHub 仓库！", true);
+        showToast("同步成功！");
+      } catch (err) {
+        updateSyncStatus("连接失败，请确认 Token 权限已勾选 repo", false);
+        showToast("同步失败，请检查 Token");
       } finally {
         btn.disabled = false;
-        btn.innerHTML = origText;
+        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>上传推送到云端</span>';
       }
     }
 
-    async function pullFromCloud(silent = false) {
-      const codeInput = document.getElementById("syncPasscodeInput") ? document.getElementById("syncPasscodeInput").value.trim() : "";
-      if (codeInput) appData.passcode = codeInput;
-
-      if (!appData.passcode) {
-        if (!silent) showToast("请先设置同步口令");
+    async function pullFromGitHub(silent = false) {
+      if (!appData.ghToken) {
+        if (!silent) showToast("请先填入 GitHub Token");
         return;
       }
-
-      const btn = document.getElementById("btnPullCloud");
-      let origText = "";
+      const btn = document.getElementById("btnPull");
       if (btn) {
-        origText = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>拉取中...</span>';
       }
-      if (!silent) updateSyncStatus("正在从云端拉取数据...", true);
+      if (!silent) updateSyncStatus("正在从 GitHub 拉取数据...", true);
 
-      const channelKey = "fit_sync_channel_" + encodeURIComponent(appData.passcode);
+      const owner = encodeURIComponent(appData.ghOwner);
+      const repo = encodeURIComponent(appData.ghRepo);
+      const filePath = "data.json";
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?t=${Date.now()}`;
 
       try {
-        // 从云端轮询最新一条缓存数据
-        const res = await fetch(`https://ntfy.sh/${channelKey}/json?poll=1&since=all`);
-        if (!res.ok) throw new Error("拉取失败");
-
-        const textStream = await res.text();
-        const lines = textStream.trim().split("\n").filter(Boolean);
-
-        let latestMessage = "";
-        for (let i = lines.length - 1; i >= 0; i--) {
-          try {
-            const parsed = JSON.parse(lines[i]);
-            if (parsed.message && parsed.title === "FIT_DATA_SYNC") {
-              latestMessage = parsed.message;
-              break;
-            }
-          } catch(err) {}
-        }
-
-        if (!latestMessage) {
-          if (!silent) {
-            updateSyncStatus("云端暂无数据，请先在电脑端点击【上传推送到云端】", false);
-            showToast("未找到云端记录，请先在另一端上传");
+        const res = await fetch(apiUrl, {
+          headers: {
+            "Authorization": `Bearer ${appData.ghToken}`,
+            "Accept": "application/vnd.github.v3+json"
           }
-          return;
-        }
+        });
 
-        const remoteObj = JSON.parse(latestMessage);
-        const restored = restoreCloudPayload(remoteObj);
-        restored.passcode = appData.passcode;
-        const timeNow = new Date().toLocaleTimeString();
-        restored.lastSync = timeNow;
+        if (!res.ok) throw new Error("未找到远程数据");
+        const fileMeta = await res.json();
+        const contentStr = base64ToUtf8(fileMeta.content.replace(/\s/g, ''));
+        const remoteData = JSON.parse(contentStr);
 
-        appData = restored;
+        remoteData.ghToken = appData.ghToken;
+        remoteData.ghOwner = appData.ghOwner;
+        remoteData.ghRepo = appData.ghRepo;
+        remoteData.lastSync = new Date().toLocaleTimeString();
+
+        appData = remoteData;
         saveState();
-
-        if (currentTab === "train") renderTrainTab();
-        if (currentTab === "calendar") renderCalendarTab();
-        if (currentTab === "history") renderHistoryTab();
-        if (currentTab === "stats") renderStatsTab();
-        if (currentTab === "sync") renderSyncTab();
-
-        document.getElementById("lastSyncTimeText").textContent = `上次同步: ${timeNow}`;
-        updateSyncStatus("已同步至云端最新数据", true);
-        showToast(silent ? "已自动拉取最新进度" : "同步成功！");
+        switchTab(currentTab);
+        updateSyncStatus("从 GitHub 拉取并同步完成！", true);
+        showToast("数据拉取成功！");
       } catch (err) {
         if (!silent) {
-          updateSyncStatus("网络拉取超时，建议使用离线文件导入", false);
-          showToast("拉取失败，请检查口令或稍后重试");
+          updateSyncStatus("未找到云端文件，请先在电脑端上传一次", false);
+          showToast("拉取失败，请先上传");
         }
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = origText;
+          btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i><span>从云端拉取</span>';
         }
       }
     }
 
     function exportBackupJSON() {
-      const dataStr = JSON.stringify(appData, null, 2);
-      const blob = new Blob([dataStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
+      const blob = new Blob([JSON.stringify(appData, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
-      a.href = url;
-      a.download = `健身打卡备份_${formatDateYMD(new Date())}.json`;
-      document.body.appendChild(a);
+      a.href = URL.createObjectURL(blob);
+      a.download = `fitness_backup_${formatDateYMD(new Date())}.json`;
       a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast("备份文件已下载，可通过微信发给手机");
     }
 
-    function importBackupJSON(event) {
-      const file = event.target.files[0];
+    function importBackupJSON(e) {
+      const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = ev => {
         try {
-          const imported = JSON.parse(e.target.result);
-          if (!imported.days || !imported.days.wed) {
-            showToast("备份格式无效");
-            return;
-          }
-          appData = imported;
+          appData = JSON.parse(ev.target.result);
           saveState();
-          renderTrainTab();
-          renderSyncTab();
-          showToast("导入成功！");
-        } catch (err) {
-          showToast("解析文件失败");
+          switchTab("train");
+          showToast("备份导入成功！");
+        } catch(err) {
+          showToast("导入失败");
         }
       };
       reader.readAsText(file);
-      event.target.value = "";
-    }
-
-    function resetToDefaultData() {
-      if (!confirm("确定要恢复出厂预设动作吗？")) return;
-      const keep = appData.passcode;
-      appData = getInitialData();
-      appData.passcode = keep;
-      saveState();
-      switchTab("train");
-      showToast("已恢复预设计划");
     }
 
     window.addEventListener("DOMContentLoaded", () => {
       renderTrainTab();
       renderSyncTab();
-      if (appData.passcode && appData.passcode.trim() !== "") {
-        pullFromCloud(true);
-      }
+      if (appData.ghToken) pullFromGitHub(true);
     });
   </script>
 </body>

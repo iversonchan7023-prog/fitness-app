@@ -115,27 +115,29 @@
       </div>
     </section>
 
-    <!-- Tab 5: 极简免配置同步 -->
+    <!-- Tab 5: 同步 -->
     <section id="tab-sync" class="tab-content hidden space-y-4">
+      <!-- 云端直连卡片 -->
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-4">
         <div class="flex items-center space-x-2">
           <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
-            <i class="fa-solid fa-cloud-bolt text-lg"></i>
+            <i class="fa-solid fa-bolt text-lg"></i>
           </div>
           <div>
             <h2 class="font-bold text-slate-800 text-base">极简口令跨端同步</h2>
-            <p class="text-xs text-slate-400">免Token、免注册，两端输入相同口令即可互通</p>
+            <p class="text-xs text-slate-400">免Token、免注册，手机与电脑输入相同口令即可互通</p>
           </div>
         </div>
 
         <div class="space-y-3 pt-1">
           <div>
-            <label class="block text-xs font-medium text-slate-600 mb-1">设置您的专属同步口令（如：chan888 或任意专属字符）</label>
+            <label class="block text-xs font-medium text-slate-600 mb-1">设置您的独享口令（建议字母+数字，如：chan888）</label>
             <div class="flex space-x-2">
               <input 
                 type="text" 
                 id="syncPasscodeInput" 
-                placeholder="请输入专属同步口令..." 
+                value="chan888"
+                placeholder="输入专属口令..." 
                 class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" 
               />
               <button onclick="savePasscode()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-lg font-medium transition">
@@ -144,7 +146,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3 pt-2">
+          <div class="grid grid-cols-2 gap-3 pt-1">
             <button onclick="pushToCloud()" id="btnPush" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-3 rounded-xl shadow-sm flex items-center justify-center space-x-1.5 text-sm transition">
               <i class="fa-solid fa-cloud-arrow-up"></i>
               <span>上传推送到云端</span>
@@ -156,31 +158,44 @@
           </div>
 
           <div id="syncStatusBox" class="text-xs bg-slate-50 text-slate-500 p-2.5 rounded-lg border border-slate-100 flex items-center justify-between">
-            <span id="syncStatusText">状态：等待同步操作</span>
+            <span id="syncStatusText">状态：就绪（直接点击上方按钮即可）</span>
             <span id="lastSyncTimeText" class="text-[11px] text-slate-400"></span>
           </div>
         </div>
       </div>
 
-      <!-- 离线 JSON 备份 -->
+      <!-- 微信文字口令秒传（100%无视任何网络限制） -->
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-3">
         <div class="flex items-center space-x-2">
-          <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
-            <i class="fa-solid fa-file-shield"></i>
+          <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+            <i class="fa-brands fa-weixin text-lg"></i>
           </div>
           <div>
-            <h2 class="font-bold text-slate-800 text-base">离线文件备份（兜底）</h2>
-            <p class="text-xs text-slate-400">导出文件通过微信发送给手机，导入即同步</p>
+            <h2 class="font-bold text-slate-800 text-base">微信文字闪电同步（无视网络）</h2>
+            <p class="text-xs text-slate-400">点「复制同步码」发给微信，另一端复制后点「粘贴导入」即刻完成</p>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3 pt-1">
-          <button onclick="exportBackupJSON()" class="border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-1">
-            <i class="fa-solid fa-download"></i><span>导出备份</span>
+          <button onclick="copySyncCode()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-3 rounded-xl text-xs flex items-center justify-center space-x-1.5 transition">
+            <i class="fa-regular fa-copy"></i><span>1. 一键复制同步码</span>
           </button>
-          <label class="border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-1 cursor-pointer">
-            <i class="fa-solid fa-upload"></i><span>导入备份</span>
-            <input type="file" id="importJsonInput" accept=".json" class="hidden" onchange="importBackupJSON(event)" />
-          </label>
+          <button onclick="pasteSyncCode()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-3 rounded-xl text-xs flex items-center justify-center space-x-1.5 transition">
+            <i class="fa-regular fa-paste"></i><span>2. 粘贴同步码导入</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 本地文件备份兜底 -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-slate-700 text-xs">JSON 文件离线备份</span>
+          <div class="flex space-x-2">
+            <button onclick="exportBackupJSON()" class="border border-slate-200 hover:bg-slate-50 text-slate-600 py-1.5 px-3 rounded-lg text-xs">导出文件</button>
+            <label class="border border-slate-200 hover:bg-slate-50 text-slate-600 py-1.5 px-3 rounded-lg text-xs cursor-pointer">
+              导入文件
+              <input type="file" id="importJsonInput" accept=".json" class="hidden" onchange="importBackupJSON(event)" />
+            </label>
+          </div>
         </div>
       </div>
     </section>
@@ -230,11 +245,11 @@
   <!-- 动作弹窗 -->
   <div id="exerciseModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4">
-      <h3 id="modalTitle" class="font-bold text-slate-800 text-base">添加动作</h3>
+      <h3 id="modalTitle" class="font-bold text-slate-800 text-base">添加/编辑动作</h3>
       <input type="hidden" id="editExerciseId" />
       <div class="space-y-3 text-sm">
         <div>
-          <label class="block text-xs text-slate-500 mb-1">名称</label>
+          <label class="block text-xs text-slate-500 mb-1">动作名称</label>
           <input type="text" id="exNameInput" class="w-full border border-slate-200 rounded-lg px-3 py-2" />
         </div>
         <div class="grid grid-cols-3 gap-2">
@@ -243,7 +258,7 @@
             <input type="number" id="exSetsInput" value="3" class="w-full border border-slate-200 rounded-lg px-3 py-2" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-1">次数</label>
+            <label class="block text-xs text-slate-500 mb-1">次数/时长</label>
             <input type="text" id="exRepsInput" value="12次" class="w-full border border-slate-200 rounded-lg px-3 py-2" />
           </div>
           <div>
@@ -288,7 +303,7 @@
       };
     }
 
-    const STORAGE_KEY = "FIT_STATE_LOCAL_V3";
+    const STORAGE_KEY = "FIT_NTFY_V5";
     let appData = loadState();
     let currentTab = "train";
     let workoutSeconds = 0, workoutInterval = null, restSeconds = 0, restInterval = null;
@@ -299,7 +314,10 @@
     function loadState() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? Object.assign(getInitialData(), JSON.parse(raw)) : getInitialData();
+        if (!raw) return getInitialData();
+        const parsed = JSON.parse(raw);
+        if (!parsed.passcode || parsed.passcode.startsWith("ghp_")) parsed.passcode = "chan888";
+        return Object.assign(getInitialData(), parsed);
       } catch (e) {
         return getInitialData();
       }
@@ -314,7 +332,7 @@
       document.getElementById("toastText").textContent = msg;
       box.classList.remove("hidden");
       clearTimeout(window._t);
-      window._t = setTimeout(() => box.classList.add("hidden"), 2500);
+      window._t = setTimeout(() => box.classList.add("hidden"), 2600);
     }
 
     function formatHMS(sec) {
@@ -420,10 +438,16 @@
               <h3 class="font-bold text-slate-800">${idx + 1}. ${ex.name}</h3>
               <p class="text-xs text-slate-500 mt-1">${ex.targetSets}组 · ${ex.reps} · <b>${ex.weight}kg</b></p>
             </div>
+            <div class="flex items-center space-x-1 text-slate-400">
+              <button onclick="openExerciseModal('${ex.id}')" class="p-1.5 hover:text-emerald-600"><i class="fa-solid fa-pen text-xs"></i></button>
+              <button onclick="deleteExercise('${ex.id}')" class="p-1.5 hover:text-rose-500"><i class="fa-regular fa-trash-can text-xs"></i></button>
+            </div>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-xs text-slate-500">进度：<b class="${isDone ? 'text-emerald-600' : 'text-slate-700'}">${ex.completedSets}/${ex.targetSets}组</b></span>
             <div class="flex items-center space-x-1.5">
               <button onclick="changeSetCount('${ex.id}', -1)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold">-</button>
-              <span class="text-xs font-bold px-2">${ex.completedSets}/${ex.targetSets}组</span>
-              <button onclick="changeSetCount('${ex.id}', 1)" class="px-3 h-8 rounded-lg bg-emerald-500 text-white text-xs font-bold">+1组</button>
+              <button onclick="changeSetCount('${ex.id}', 1)" class="px-3.5 h-8 rounded-lg bg-emerald-500 text-white text-xs font-bold">+1组</button>
             </div>
           </div>
         `;
@@ -440,28 +464,56 @@
       if (d > 0) startRestTimer(60);
     }
 
+    function deleteExercise(id) {
+      if (!confirm("确定删除该动作？")) return;
+      const cur = appData.days[appData.selectedDay];
+      cur.exercises = cur.exercises.filter(e => e.id !== id);
+      saveState();
+      renderTrainTab();
+    }
+
     function editDayTheme() {
       const cur = appData.days[appData.selectedDay];
       const res = prompt("修改训练主题", cur.theme);
       if (res) { cur.theme = res.trim(); saveState(); renderTrainTab(); }
     }
 
-    function openExerciseModal() {
-      document.getElementById("exNameInput").value = "";
+    function openExerciseModal(exId = null) {
+      const idInput = document.getElementById("editExerciseId");
+      if (exId) {
+        const ex = appData.days[appData.selectedDay].exercises.find(e => e.id === exId);
+        if (!ex) return;
+        idInput.value = ex.id;
+        document.getElementById("exNameInput").value = ex.name;
+        document.getElementById("exSetsInput").value = ex.targetSets;
+        document.getElementById("exRepsInput").value = ex.reps;
+        document.getElementById("exWeightInput").value = ex.weight;
+      } else {
+        idInput.value = "";
+        document.getElementById("exNameInput").value = "";
+        document.getElementById("exSetsInput").value = 3;
+        document.getElementById("exRepsInput").value = "12次";
+        document.getElementById("exWeightInput").value = 20;
+      }
       document.getElementById("exerciseModal").classList.remove("hidden");
     }
     function closeExerciseModal() {
       document.getElementById("exerciseModal").classList.add("hidden");
     }
     function saveExerciseModal() {
+      const id = document.getElementById("editExerciseId").value;
       const name = document.getElementById("exNameInput").value.trim();
       const sets = parseInt(document.getElementById("exSetsInput").value) || 3;
       const reps = document.getElementById("exRepsInput").value.trim() || "12次";
       const weight = parseFloat(document.getElementById("exWeightInput").value) || 0;
       if (!name) return;
-      appData.days[appData.selectedDay].exercises.push({
-        id: "ex_" + Date.now(), name, targetSets: sets, completedSets: 0, reps, weight
-      });
+      const cur = appData.days[appData.selectedDay];
+      if (id) {
+        const ex = cur.exercises.find(e => e.id === id);
+        if (ex) { ex.name = name; ex.targetSets = sets; ex.reps = reps; ex.weight = weight; }
+      } else {
+        cur.exercises.push({ id: "ex_" + Date.now(), name, targetSets: sets, completedSets: 0, reps, weight });
+      }
       saveState();
       closeExerciseModal();
       renderTrainTab();
@@ -565,7 +617,7 @@
       });
     }
 
-    // ==================== 极简口令云同步核心逻辑 ====================
+    // ==================== 基于已验证成功的 ntfy.sh 极简同步 ====================
     function renderSyncTab() {
       document.getElementById("syncPasscodeInput").value = appData.passcode || "chan888";
       if (appData.lastSync) document.getElementById("lastSyncTimeText").textContent = `上次同步: ${appData.lastSync}`;
@@ -576,7 +628,7 @@
       if (!code) { showToast("口令不能为空"); return; }
       appData.passcode = code;
       saveState();
-      showToast("口令已保存！");
+      showToast(`口令「${code}」已保存！`);
     }
 
     function updateSyncStatus(text, ok) {
@@ -587,57 +639,43 @@
       dot.className = `w-2 h-2 rounded-full ${ok ? 'bg-emerald-400' : 'bg-rose-400'}`;
     }
 
-    // 国内多通道自动竞速与兜底机制
+    function utf8ToBase64(str) {
+      return window.btoa(unescape(encodeURIComponent(str)));
+    }
+    function base64ToUtf8(str) {
+      return decodeURIComponent(escape(window.atob(str)));
+    }
+
     async function pushToCloud() {
-      const code = document.getElementById("syncPasscodeInput").value.trim();
-      if (!code) { showToast("请先设置口令"); return; }
+      const code = document.getElementById("syncPasscodeInput").value.trim() || "chan888";
       appData.passcode = code;
+      saveState();
 
       const btn = document.getElementById("btnPush");
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>上传中...</span>';
-      updateSyncStatus("正在推送到云端...", true);
+      updateSyncStatus("正在上传至云端...", true);
 
-      const payload = JSON.stringify(appData);
-      const safeKey = "fit_" + encodeURIComponent(code);
+      const topic = "fit_butler_cn_" + encodeURIComponent(code);
+      // 编码为纯单行 Base64 字符串，杜绝换行或中文截断
+      const encodedPayload = "FITSYNC:" + utf8ToBase64(JSON.stringify(appData));
 
       try {
-        let ok = false;
+        const res = await fetch(`https://ntfy.sh/${topic}`, {
+          method: "POST",
+          body: encodedPayload
+        });
 
-        // 通道 1: 国内免翻直连轻量通道 (支持所有浏览器跨域 CORS)
-        try {
-          const r1 = await fetch(`https://api.keyvalue.xyz/set/${safeKey}`, {
-            method: "POST",
-            body: payload,
-            headers: { "Content-Type": "text/plain" }
-          });
-          if (r1.ok) ok = true;
-        } catch(e1) {}
-
-        // 通道 2: 备用通用中转
-        if (!ok) {
-          const r2 = await fetch(`https://api.restful-api.dev/objects`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: safeKey, data: { val: payload, time: Date.now() } })
-          });
-          if (r2.ok) {
-            const data = await r2.json();
-            localStorage.setItem("BACKUP_REMOTE_ID_" + safeKey, data.id);
-            ok = true;
-          }
-        }
-
-        if (!ok) throw new Error("所有通道连接超时");
+        if (!res.ok) throw new Error("上传异常");
 
         appData.lastSync = new Date().toLocaleTimeString();
         saveState();
         renderSyncTab();
-        updateSyncStatus("推送成功！另一端输入相同口令点击【从云端拉取】即可", true);
-        showToast("上传成功！");
+        updateSyncStatus("推送成功！在另一设备输入相同口令点击【从云端拉取】即可", true);
+        showToast("已成功推送到云端！");
       } catch (err) {
-        updateSyncStatus("连接超时，可使用下方【导出备份】通过微信传输", false);
-        showToast("同步受阻，建议微信传离线备份");
+        updateSyncStatus("云端繁忙，请使用下方【一键复制同步码】发微信同步", false);
+        showToast("请使用下方微信同步码");
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>上传推送到云端</span>';
@@ -646,7 +684,6 @@
 
     async function pullFromCloud(silent = false) {
       const code = document.getElementById("syncPasscodeInput") ? document.getElementById("syncPasscodeInput").value.trim() : (appData.passcode || "chan888");
-      if (!code) { if (!silent) showToast("请先设置口令"); return; }
       appData.passcode = code;
 
       const btn = document.getElementById("btnPull");
@@ -656,49 +693,95 @@
       }
       if (!silent) updateSyncStatus("正在从云端拉取...", true);
 
-      const safeKey = "fit_" + encodeURIComponent(code);
-      let remoteText = "";
+      const topic = "fit_butler_cn_" + encodeURIComponent(code);
 
       try {
-        // 先尝试从通道 1 拉取
-        try {
-          const r1 = await fetch(`https://api.keyvalue.xyz/get/${safeKey}?t=${Date.now()}`);
-          if (r1.ok) remoteText = await r1.text();
-        } catch(e1) {}
+        // 使用 since=24h 拉取最近24小时缓存记录
+        const res = await fetch(`https://ntfy.sh/${topic}/json?poll=1&since=24h`);
+        if (!res.ok) throw new Error("拉取异常");
 
-        // 尝试从备用通道拉取
-        if (!remoteText) {
-          const cachedId = localStorage.getItem("BACKUP_REMOTE_ID_" + safeKey);
-          if (cachedId) {
-            const r2 = await fetch(`https://api.restful-api.dev/objects/${cachedId}`);
-            if (r2.ok) {
-              const resJson = await r2.json();
-              if (resJson.data && resJson.data.val) remoteText = resJson.data.val;
+        const text = await res.text();
+        const lines = text.trim().split("\n").filter(Boolean);
+
+        let latestEncoded = "";
+        for (let i = lines.length - 1; i >= 0; i--) {
+          try {
+            const row = JSON.parse(lines[i]);
+            if (row.message && row.message.startsWith("FITSYNC:")) {
+              latestEncoded = row.message.slice(8);
+              break;
             }
-          }
+          } catch (e) {}
         }
 
-        if (!remoteText) throw new Error("未读取到数据");
+        if (!latestEncoded) {
+          if (!silent) {
+            updateSyncStatus("云端暂无记录，请先在另一端点击【上传推送到云端】", false);
+            showToast("请先在另一端上传一次");
+          }
+          return;
+        }
 
-        const remoteData = JSON.parse(remoteText);
+        const decodedJson = base64ToUtf8(latestEncoded);
+        const remoteData = JSON.parse(decodedJson);
         remoteData.passcode = code;
         remoteData.lastSync = new Date().toLocaleTimeString();
+
         appData = remoteData;
         saveState();
-
         switchTab(currentTab);
-        updateSyncStatus("已成功同步最新数据！", true);
-        showToast(silent ? "已自动拉取最新进度" : "同步完成！");
+        updateSyncStatus("已同步至云端最新数据！", true);
+        showToast(silent ? "已自动同步最新数据" : "拉取成功！");
       } catch (err) {
         if (!silent) {
-          updateSyncStatus("未找到云端数据，请先在电脑端点击【上传推送到云端】", false);
-          showToast("拉取失败，请先上传");
+          updateSyncStatus("拉取超时，可使用下方微信文字同步码", false);
+          showToast("拉取失败，请重试");
         }
       } finally {
         if (btn) {
           btn.disabled = false;
           btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i><span>从云端拉取</span>';
         }
+      }
+    }
+
+    // ==================== 微信文字闪电同步（100%不受网络限制） ====================
+    async function copySyncCode() {
+      const codeStr = "FITSYNC:" + utf8ToBase64(JSON.stringify(appData));
+      try {
+        await navigator.clipboard.writeText(codeStr);
+        showToast("同步码已复制！请粘贴发给微信");
+      } catch (e) {
+        prompt("请全选复制以下同步码发给微信：", codeStr);
+      }
+    }
+
+    async function pasteSyncCode() {
+      let raw = "";
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          raw = await navigator.clipboard.readText();
+        }
+      } catch (e) {}
+
+      if (!raw || !raw.includes("FITSYNC:")) {
+        raw = prompt("请长按粘贴从微信复制过来的同步码：") || "";
+      }
+
+      if (!raw.includes("FITSYNC:")) {
+        showToast("未检测到有效同步码");
+        return;
+      }
+
+      try {
+        const b64 = raw.split("FITSYNC:")[1].trim();
+        const imported = JSON.parse(base64ToUtf8(b64));
+        appData = imported;
+        saveState();
+        switchTab("train");
+        showToast("微信同步码导入成功！");
+      } catch (err) {
+        showToast("同步码不完整或已损坏");
       }
     }
 

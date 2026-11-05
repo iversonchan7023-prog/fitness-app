@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>健身随身管家 - GitHub原生云同步</title>
+  <title>健身随身管家</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
@@ -115,83 +115,62 @@
       </div>
     </section>
 
-    <!-- Tab 5: 同步 -->
+    <!-- Tab 5: 极简免配置同步 -->
     <section id="tab-sync" class="tab-content hidden space-y-4">
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-4">
         <div class="flex items-center space-x-2">
           <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
-            <i class="fa-brands fa-github text-lg"></i>
+            <i class="fa-solid fa-cloud-bolt text-lg"></i>
           </div>
           <div>
-            <h2 class="font-bold text-slate-800 text-base">GitHub 原生私有云同步</h2>
-            <p class="text-xs text-slate-400">数据直连提交至仓库，安全稳定不拦截</p>
+            <h2 class="font-bold text-slate-800 text-base">极简口令跨端同步</h2>
+            <p class="text-xs text-slate-400">免Token、免注册，两端输入相同口令即可互通</p>
           </div>
         </div>
 
         <div class="space-y-3 pt-1">
           <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="block text-xs font-medium text-slate-600">GitHub Token (密钥)</label>
-              <!-- 一键读取剪贴板按钮 -->
-              <button onclick="pasteTokenFromClipboard()" class="text-xs text-emerald-600 hover:text-emerald-700 flex items-center space-x-1">
-                <i class="fa-regular fa-paste"></i>
-                <span>点击一键粘贴</span>
+            <label class="block text-xs font-medium text-slate-600 mb-1">设置您的专属同步口令（如：chan888 或任意专属字符）</label>
+            <div class="flex space-x-2">
+              <input 
+                type="text" 
+                id="syncPasscodeInput" 
+                placeholder="请输入专属同步口令..." 
+                class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500" 
+              />
+              <button onclick="savePasscode()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-lg font-medium transition">
+                保存口令
               </button>
             </div>
-            <!-- 修改为普通 text 输入框，并增加自动识别属性 -->
-            <input 
-              type="text" 
-              id="ghTokenInput" 
-              autocapitalize="off" 
-              autocorrect="off" 
-              spellcheck="false" 
-              placeholder="粘贴 ghp_ 开头的密钥..." 
-              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-emerald-500" 
-            />
           </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-xs font-medium text-slate-600 mb-1">GitHub 用户名</label>
-              <input type="text" id="ghOwnerInput" value="iversonchan7023-prog" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-500" />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-600 mb-1">仓库名</label>
-              <input type="text" id="ghRepoInput" value="健身应用" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-500" />
-            </div>
-          </div>
-
-          <button onclick="saveGitHubConfig()" class="w-full bg-slate-800 hover:bg-slate-700 text-white text-xs py-2 rounded-lg font-medium transition">
-            保存配置信息
-          </button>
 
           <div class="grid grid-cols-2 gap-3 pt-2">
-            <button onclick="pushToGitHub()" id="btnPush" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-3 rounded-xl shadow-sm flex items-center justify-center space-x-1.5 text-sm transition">
+            <button onclick="pushToCloud()" id="btnPush" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-3 rounded-xl shadow-sm flex items-center justify-center space-x-1.5 text-sm transition">
               <i class="fa-solid fa-cloud-arrow-up"></i>
               <span>上传推送到云端</span>
             </button>
-            <button onclick="pullFromGitHub(false)" id="btnPull" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-3 rounded-xl shadow-sm flex items-center justify-center space-x-1.5 text-sm transition">
+            <button onclick="pullFromCloud(false)" id="btnPull" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-3 rounded-xl shadow-sm flex items-center justify-center space-x-1.5 text-sm transition">
               <i class="fa-solid fa-cloud-arrow-down"></i>
               <span>从云端拉取</span>
             </button>
           </div>
 
           <div id="syncStatusBox" class="text-xs bg-slate-50 text-slate-500 p-2.5 rounded-lg border border-slate-100 flex items-center justify-between">
-            <span id="syncStatusText">状态：等待配置与同步</span>
+            <span id="syncStatusText">状态：等待同步操作</span>
             <span id="lastSyncTimeText" class="text-[11px] text-slate-400"></span>
           </div>
         </div>
       </div>
 
-      <!-- 微信文件备份兜底 -->
+      <!-- 离线 JSON 备份 -->
       <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-3">
         <div class="flex items-center space-x-2">
           <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
             <i class="fa-solid fa-file-shield"></i>
           </div>
           <div>
-            <h2 class="font-bold text-slate-800 text-base">本地离线文件备份</h2>
-            <p class="text-xs text-slate-400">微信发给手机直接导入</p>
+            <h2 class="font-bold text-slate-800 text-base">离线文件备份（兜底）</h2>
+            <p class="text-xs text-slate-400">导出文件通过微信发送给手机，导入即同步</p>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3 pt-1">
@@ -288,9 +267,7 @@
     function getInitialData() {
       return {
         selectedDay: "wed",
-        ghToken: "",
-        ghOwner: "iversonchan7023-prog",
-        ghRepo: "健身应用",
+        passcode: "chan888",
         lastSync: "",
         days: {
           mon: { name: "周一", theme: "胸+三头", exercises: [{ id: "m1", name: "平板杠铃卧推", targetSets: 4, completedSets: 0, reps: "8-12次", weight: 60 }] },
@@ -311,7 +288,7 @@
       };
     }
 
-    const STORAGE_KEY = "FITNESS_BUTLER_GH_V1";
+    const STORAGE_KEY = "FIT_STATE_LOCAL_V3";
     let appData = loadState();
     let currentTab = "train";
     let workoutSeconds = 0, workoutInterval = null, restSeconds = 0, restInterval = null;
@@ -588,154 +565,133 @@
       });
     }
 
-    // ==================== GitHub 原生同步逻辑 ====================
+    // ==================== 极简口令云同步核心逻辑 ====================
     function renderSyncTab() {
-      document.getElementById("ghTokenInput").value = appData.ghToken || "";
-      document.getElementById("ghOwnerInput").value = appData.ghOwner || "iversonchan7023-prog";
-      document.getElementById("ghRepoInput").value = appData.ghRepo || "健身应用";
+      document.getElementById("syncPasscodeInput").value = appData.passcode || "chan888";
       if (appData.lastSync) document.getElementById("lastSyncTimeText").textContent = `上次同步: ${appData.lastSync}`;
     }
 
-    // 点击一键读取剪贴板
-    async function pasteTokenFromClipboard() {
-      try {
-        if (navigator.clipboard && navigator.clipboard.readText) {
-          const text = await navigator.clipboard.readText();
-          if (text) {
-            document.getElementById("ghTokenInput").value = text.trim();
-            showToast("已成功从剪贴板粘贴");
-            return;
-          }
-        }
-      } catch (err) {}
-      // 降级兜底聚焦
-      document.getElementById("ghTokenInput").focus();
-      showToast("请长按输入框直接粘贴");
-    }
-
-    function saveGitHubConfig() {
-      appData.ghToken = document.getElementById("ghTokenInput").value.trim();
-      appData.ghOwner = document.getElementById("ghOwnerInput").value.trim();
-      appData.ghRepo = document.getElementById("ghRepoInput").value.trim();
+    function savePasscode() {
+      const code = document.getElementById("syncPasscodeInput").value.trim();
+      if (!code) { showToast("口令不能为空"); return; }
+      appData.passcode = code;
       saveState();
-      showToast("GitHub 配置已保存！");
+      showToast("口令已保存！");
     }
 
     function updateSyncStatus(text, ok) {
       const el = document.getElementById("syncStatusText");
+      const dot = document.getElementById("cloudStatusDot");
       el.textContent = "状态：" + text;
       el.className = ok ? "text-emerald-600 font-medium" : "text-rose-500 font-medium";
+      dot.className = `w-2 h-2 rounded-full ${ok ? 'bg-emerald-400' : 'bg-rose-400'}`;
     }
 
-    function utf8ToBase64(str) {
-      return window.btoa(unescape(encodeURIComponent(str)));
-    }
-    function base64ToUtf8(str) {
-      return decodeURIComponent(escape(window.atob(str)));
-    }
+    // 国内多通道自动竞速与兜底机制
+    async function pushToCloud() {
+      const code = document.getElementById("syncPasscodeInput").value.trim();
+      if (!code) { showToast("请先设置口令"); return; }
+      appData.passcode = code;
 
-    async function pushToGitHub() {
-      if (!appData.ghToken) {
-        showToast("请先填入 GitHub Token");
-        return;
-      }
       const btn = document.getElementById("btnPush");
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>推送中...</span>';
-      updateSyncStatus("正在向 GitHub 仓库提交数据...", true);
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>上传中...</span>';
+      updateSyncStatus("正在推送到云端...", true);
 
-      const owner = encodeURIComponent(appData.ghOwner);
-      const repo = encodeURIComponent(appData.ghRepo);
-      const filePath = "data.json";
-      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+      const payload = JSON.stringify(appData);
+      const safeKey = "fit_" + encodeURIComponent(code);
 
       try {
-        let sha = "";
-        const getRes = await fetch(apiUrl, {
-          headers: {
-            "Authorization": `Bearer ${appData.ghToken}`,
-            "Accept": "application/vnd.github.v3+json"
+        let ok = false;
+
+        // 通道 1: 国内免翻直连轻量通道 (支持所有浏览器跨域 CORS)
+        try {
+          const r1 = await fetch(`https://api.keyvalue.xyz/set/${safeKey}`, {
+            method: "POST",
+            body: payload,
+            headers: { "Content-Type": "text/plain" }
+          });
+          if (r1.ok) ok = true;
+        } catch(e1) {}
+
+        // 通道 2: 备用通用中转
+        if (!ok) {
+          const r2 = await fetch(`https://api.restful-api.dev/objects`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: safeKey, data: { val: payload, time: Date.now() } })
+          });
+          if (r2.ok) {
+            const data = await r2.json();
+            localStorage.setItem("BACKUP_REMOTE_ID_" + safeKey, data.id);
+            ok = true;
           }
-        });
-        if (getRes.ok) {
-          const fileMeta = await getRes.json();
-          sha = fileMeta.sha;
         }
 
-        const contentBase64 = utf8ToBase64(JSON.stringify(appData, null, 2));
-        const putRes = await fetch(apiUrl, {
-          method: "PUT",
-          headers: {
-            "Authorization": `Bearer ${appData.ghToken}`,
-            "Content-Type": "application/json",
-            "Accept": "application/vnd.github.v3+json"
-          },
-          body: JSON.stringify({
-            message: "Sync fitness data from app",
-            content: contentBase64,
-            sha: sha || undefined
-          })
-        });
-
-        if (!putRes.ok) throw new Error("GitHub 认证失败或权限不足");
+        if (!ok) throw new Error("所有通道连接超时");
 
         appData.lastSync = new Date().toLocaleTimeString();
         saveState();
         renderSyncTab();
-        updateSyncStatus("已成功同步至 GitHub 仓库！", true);
-        showToast("同步成功！");
+        updateSyncStatus("推送成功！另一端输入相同口令点击【从云端拉取】即可", true);
+        showToast("上传成功！");
       } catch (err) {
-        updateSyncStatus("连接失败，请确认 Token 权限已勾选 repo", false);
-        showToast("同步失败，请检查 Token");
+        updateSyncStatus("连接超时，可使用下方【导出备份】通过微信传输", false);
+        showToast("同步受阻，建议微信传离线备份");
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>上传推送到云端</span>';
       }
     }
 
-    async function pullFromGitHub(silent = false) {
-      if (!appData.ghToken) {
-        if (!silent) showToast("请先填入 GitHub Token");
-        return;
-      }
+    async function pullFromCloud(silent = false) {
+      const code = document.getElementById("syncPasscodeInput") ? document.getElementById("syncPasscodeInput").value.trim() : (appData.passcode || "chan888");
+      if (!code) { if (!silent) showToast("请先设置口令"); return; }
+      appData.passcode = code;
+
       const btn = document.getElementById("btnPull");
       if (btn) {
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>拉取中...</span>';
       }
-      if (!silent) updateSyncStatus("正在从 GitHub 拉取数据...", true);
+      if (!silent) updateSyncStatus("正在从云端拉取...", true);
 
-      const owner = encodeURIComponent(appData.ghOwner);
-      const repo = encodeURIComponent(appData.ghRepo);
-      const filePath = "data.json";
-      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?t=${Date.now()}`;
+      const safeKey = "fit_" + encodeURIComponent(code);
+      let remoteText = "";
 
       try {
-        const res = await fetch(apiUrl, {
-          headers: {
-            "Authorization": `Bearer ${appData.ghToken}`,
-            "Accept": "application/vnd.github.v3+json"
+        // 先尝试从通道 1 拉取
+        try {
+          const r1 = await fetch(`https://api.keyvalue.xyz/get/${safeKey}?t=${Date.now()}`);
+          if (r1.ok) remoteText = await r1.text();
+        } catch(e1) {}
+
+        // 尝试从备用通道拉取
+        if (!remoteText) {
+          const cachedId = localStorage.getItem("BACKUP_REMOTE_ID_" + safeKey);
+          if (cachedId) {
+            const r2 = await fetch(`https://api.restful-api.dev/objects/${cachedId}`);
+            if (r2.ok) {
+              const resJson = await r2.json();
+              if (resJson.data && resJson.data.val) remoteText = resJson.data.val;
+            }
           }
-        });
+        }
 
-        if (!res.ok) throw new Error("未找到远程数据");
-        const fileMeta = await res.json();
-        const contentStr = base64ToUtf8(fileMeta.content.replace(/\s/g, ''));
-        const remoteData = JSON.parse(contentStr);
+        if (!remoteText) throw new Error("未读取到数据");
 
-        remoteData.ghToken = appData.ghToken;
-        remoteData.ghOwner = appData.ghOwner;
-        remoteData.ghRepo = appData.ghRepo;
+        const remoteData = JSON.parse(remoteText);
+        remoteData.passcode = code;
         remoteData.lastSync = new Date().toLocaleTimeString();
-
         appData = remoteData;
         saveState();
+
         switchTab(currentTab);
-        updateSyncStatus("从 GitHub 拉取并同步完成！", true);
-        showToast("数据拉取成功！");
+        updateSyncStatus("已成功同步最新数据！", true);
+        showToast(silent ? "已自动拉取最新进度" : "同步完成！");
       } catch (err) {
         if (!silent) {
-          updateSyncStatus("未找到云端文件，请先在电脑端上传一次", false);
+          updateSyncStatus("未找到云端数据，请先在电脑端点击【上传推送到云端】", false);
           showToast("拉取失败，请先上传");
         }
       } finally {
@@ -772,19 +728,9 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      // 支持网址后带 #token= 自动识别
-      if (window.location.hash.includes("token=")) {
-        const token = window.location.hash.split("token=")[1];
-        if (token) {
-          appData.ghToken = decodeURIComponent(token);
-          saveState();
-          history.replaceState(null, "", window.location.pathname);
-        }
-      }
-
       renderTrainTab();
       renderSyncTab();
-      if (appData.ghToken) pullFromGitHub(true);
+      if (appData.passcode) pullFromCloud(true);
     });
   </script>
 </body>
